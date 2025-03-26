@@ -33,8 +33,8 @@ Berikut adalah gambaran isi repository ini:
 
 - **📁 Tugas/**: Tempat untuk semua tugas yang diberikan oleh dosen.  
 - **📁 Praktikum/**: Berisi hasil pengerjaan praktikum (cuma ada **praktikum 0** hehe, karena praktikum lainnya dikerjakan di lab koica). 
-- **📁 PraPraktekum/**: Berisi hasil pengerjaan tugas pra-praktikum (ini sih latihan sebelum mulai praktikumnya).  
-- **📁 PostPraktekum/**: Berisi hasil pengerjaan tugas post-praktikum (isi post-praktikum sama kok kayak praktikumnya).  
+- **📁 PraPraktikum/**: Berisi hasil pengerjaan tugas pra-praktikum (ini sih latihan sebelum mulai praktikumnya).  
+- **📁 PostPraktikum/**: Berisi hasil pengerjaan tugas post-praktikum (isi post-praktikum sama kok kayak praktikumnya).  
 - **📄 README.md**: File yang sedang Anda baca, penuh dengan informasi penting dan keren!  
 
 ---
