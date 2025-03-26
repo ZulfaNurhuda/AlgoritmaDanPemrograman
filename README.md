@@ -90,7 +90,6 @@ Berikut adalah beberapa sumber referensi yang bisa membantu Anda mempelajari bah
 - **[GeeksforGeeks C Programming](https://www.geeksforgeeks.org/c-programming-language/)** - Artikel dan contoh kode C yang lengkap.  
 - **[C Programming Documentation (cppreference.com)](https://en.cppreference.com/w/c)** - Dokumentasi resmi untuk referensi sintaks dan fungsi C.  
 - **[C Programming Documentation (devdocs.io)](https://devdocs.io/c/)** - Dokumentasi lengkap bahasa C yang digunakan juga dalam praktikum.
-- **[HackerRank C Challenges](https://www.hackerrank.com/domains/tutorials/10-days-of-c)** - Latihan coding dalam bahasa C untuk mengasah kemampuan.  
 
 Gunakan sumber-sumber ini untuk memperdalam pemahaman Anda tentang bahasa C! 📖
 
