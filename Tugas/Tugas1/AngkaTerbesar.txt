@@ -1,0 +1,14 @@
+PROGRAM AngkaTerbesar
+{ Dibaca 2 bilangan float x dan y }
+{ Akan dicari bilangan terbesar dari 2 bilangan tersebut }
+
+KAMUS
+    x, y, terbesar: float
+
+ALGORITMA
+    input(x, y)
+    if (x > y) then
+        terbesar <- x
+    else { y > x } then
+        terbesar <- y
+    output(terbesar)

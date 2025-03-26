@@ -1,0 +1,25 @@
+PROGRAM ResistansiTotal
+{ Dibaca 4 bilangan integer, yaitu 3 bilangan besaran resistor dan 1 pilihan }
+{ Akan dilakukan validasi terhadap input, sehingga formatnya sesuai (tidak boleh negatif, dan saat paralel tidak boleh sama dengan 0) }
+{ Apabila valid, maka akan ditampilkan total resistansi total berdasarkan pilihan }
+
+KAMUS
+    R1, R2, R3, pilihan: integer
+    RT: float
+
+ALGORITMA
+    input(R1, R2, R3, pilihan)
+    if (R1 < 0 or R2 < 0 or R3 < 0) then
+        output("Masukan tidak valid")
+    else { R1 > 0 and R2 > 0 and R3 > 0 } then
+        if (pilihan = 1) then
+            RT <- R1 + R2 + R3
+            output(RT)
+        else if (pilihan = 2) then
+            if (R1 = 0 or R2 = 0 or R3 = 0) then
+                output("Masukan tidak valid")
+            else { R1, R2, dan R3 tidak sama dengan 0 } then
+                RT <- 1 / (1/R1 + 1/R2 + 1/R3)
+                output(RT)
+        else { pilihan selain 1 dan 2 } then
+            output(<pesan_kesalahan>)

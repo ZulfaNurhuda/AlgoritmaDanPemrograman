@@ -1,0 +1,26 @@
+PROGRAM PerbandinganPecahan
+{ Dibaca 2 bilangan pecahan sebagai representasi P1 dan P2 }
+{ Akan dilakukan validasi terhadap input, sehingga formatnya sesuai (penyebut > 0) }
+{ Apabila valid, maka akan dibandingkan dan dihitung selisihnya }
+
+KAMUS
+    type pecahan : < pembilang : integer;
+                     penyebut : integer > 0 >
+    P1, P2, selisih: pecahan
+    nilaiP1, nilaiP2: float
+
+ALGORITMA
+    input(P1.pembilang, P1.penyebut)
+    input(P2.pembilang, P2.penyebut)
+    if (P1.penyebut <= 0 or P2.penyebut <= 0) then
+        output(<pesan_kesalahan>)
+    else { P1.penyebut > 0 and P2.penyebut > 0 } then
+        nilaiP1 <- P1.pembilang / P1.penyebut
+        nilaiP2 <- P2.pembilang / P2.penyebut
+        if (nilaiP1 > nilaiP2) then
+            selisih.pembilang <- P1.pembilang * P2.penyebut - P2.pembilang * P1.penyebut
+            selisih.penyebut <- P1.penyebut * P2.penyebut
+        else { nilaiP2 > nilaiP1 } then
+            selisih.pembilang <- P2.pembilang * P1.penyebut - P1.pembilang * P2.penyebut
+            selisih.penyebut <- P1.penyebut * P2.penyebut   
+        output(selisih)
