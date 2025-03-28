@@ -1,2 +1,10 @@
+# IGNORE SEMUA FILE TEMPORARY
+
+# Ignore file hasil compile
 *.exe
+
+# Ignore file konfigurasi yang berisi pengaturan untuk aplikasi dan sistem operasi
+*.ini
+
+# Ignore file microsoft word
 *.docx
