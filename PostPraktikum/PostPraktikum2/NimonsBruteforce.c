@@ -9,10 +9,6 @@
 // I THINK THIS IS A BUG, BUT I DON'T KNOW HOW TO FIX IT
 // HEHE, SORRY :)
 
-/**
- * Fungsi untuk mendapatkan panjang angka
- * Kembalikan -1 jika angka == 0
- */
 int length(int angka)
 {
     if (angka == 0)
@@ -26,10 +22,6 @@ int length(int angka)
     return len;
 }
 
-/**
- * Fungsi untuk mendapatkan digit ke-i dari kanan
- * Kembalikan -1 jika index > panjang atau index < 0
- */
 int getDigit(int angka, int index)
 {
     if (index < 0)
@@ -40,10 +32,6 @@ int getDigit(int angka, int index)
     return (angka / (int)pow(10, index)) % 10;
 }
 
-/**
- * Fungsi untuk menghapus digit ke-i dari kanan
- * Kembalikan angka yang sama jika index > panjang atau index < 0
- */
 int removeDigit(int angka, int index)
 {
     if (index < 0)
@@ -64,9 +52,6 @@ int removeDigit(int angka, int index)
     }
 }
 
-/**
- * Fungsi rekursif untuk mencari semua kombinasi angka
- */
 void cariKombinasi(int angka, int current, int panjangAwal)
 {
     int len = length(angka);
@@ -85,9 +70,6 @@ void cariKombinasi(int angka, int current, int panjangAwal)
     }
 }
 
-/**
- * Fungsi untuk menginisialisasi pemanggilan cariKombinasi
- */
 void NimonBruteforce(int angka)
 {
     if (angka == 0)
