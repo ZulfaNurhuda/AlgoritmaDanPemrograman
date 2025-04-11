@@ -3,9 +3,13 @@
 
 int isPalindrom(char *s, int n)
 {
-    if (n < 2)
+    if (n <= 0)
     {
         return 0;
+    }
+    else if (n < 2)
+    {
+        return 1;
     }
 
     for (int i = 0; i < n / 2; i++)
@@ -34,7 +38,7 @@ int main()
     char s[1001];
 
     scanf("%s", s);
-    
+
     int n = strlen(s);
 
     if (isPalindrom(s, n))

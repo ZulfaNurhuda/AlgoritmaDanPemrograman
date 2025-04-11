@@ -30,7 +30,7 @@ int main()
 
             int kiri = i + 1;
             int kanan = n - 1;
-            while (kiri < kanan)
+            while (kiri < kanan) 
             {
                 int temp = berat[kiri];
                 berat[kiri] = berat[kanan];
