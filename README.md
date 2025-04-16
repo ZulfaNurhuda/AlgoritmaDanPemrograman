@@ -8,15 +8,15 @@ Ini adalah tempat spesial untuk mengarsipkan semua **tugas** dan **kegiatan prak
 
 ### **📋・Daftar Isi**
 
-- <a href="#tentang-repository" style="text-decoration: none;">**✨・Tentang Repository**</a>
-- <a href="#struktur-repository" style="text-decoration: none;">**🗂️・Struktur Repository**</a>
-- <a href="#bahasa-pemrograman-c" style="text-decoration: none;">**💻・Bahasa Pemrograman: C**</a>
-- <a href="#tools-dan-software" style="text-decoration: none;">**🛠️・Tools dan Software yang Digunakan**</a>
-- <a href="#lingkup-pelajaran" style="text-decoration: none;">**📊・Lingkup Pelajaran**</a>
-- <a href="#tips-dan-trick" style="text-decoration: none;">**🎯・Tips Belajar Algoritma dan Pemrograman**</a>
-- <a href="#referensi" style="text-decoration: none;">**📚・Referensi Belajar Bahasa C**</a>
-- <a href="#kontak" style="text-decoration: none;">**📧・Kontak**</a>
-- <a href="#about-me" style="text-decoration: none;">**👋・About Me!**</a>
+- **✨・<a href="#tentang-repository" style="text-decoration: none;">Tentang Repository</a>**
+- **🗂️・<a href="#struktur-repository" style="text-decoration: none;">Struktur Repository</a>**
+- **💻・<a href="#bahasa-pemrograman-c" style="text-decoration: none;">Bahasa Pemrograman: C</a>**
+- **🛠️・<a href="#tools-dan-software" style="text-decoration: none;">Tools dan Software yang Digunakan</a>**
+- **📊・<a href="#lingkup-pelajaran" style="text-decoration: none;">Lingkup Pelajaran</a>**
+- **🎯・<a href="#tips-dan-trick" style="text-decoration: none;">Tips Belajar Algoritma dan Pemrograman</a>**
+- **📚・<a href="#referensi" style="text-decoration: none;">Referensi Belajar Bahasa C</a>**
+- **📧・<a href="#kontak" style="text-decoration: none;">Kontak</a>**
+- **👋・<a href="#about-me" style="text-decoration: none;">About Me!</a>**
 
 ---
 
@@ -35,18 +35,13 @@ Repository ini adalah **koleksi digital** yang berisi semua tugas dan praktikum 
 Berikut adalah gambaran isi repository ini:
 
 - **`📁・Materi/`**: Seluruh materi perkuliahan Algoritma dan Pemrograman.
-  - Materi perkuliahan yang ada di Google Classrom disimpan di folder arsip ini.
 - **`📁・Tugas/`**: Tempat untuk semua tugas yang diberikan oleh dosen. 
-  - Berisi tugas-tugas mingguan yang diberikan oleh dosen, biasanya dalam bentuk PDF. 
 - **`📁・Praktikum/`**: Berisi hasil pengerjaan praktikum.
-  - Hanya tersedia untuk **Praktikum 0** (Pengenalan) dan **Praktikum 3** (Dilaksanakan online karena mendekati libur Idulfitri).
-  - Praktikum yang tersedia di folder ini, tidak akan tersedia lagi di folder **PostPraktikum**.
 - **`📁・PraPraktikum/`**: Berisi hasil pengerjaan tugas pra-praktikum.
-  - Berisi latihan-latihan sebelum dimulainya praktikum.  
 - **`📁・PostPraktikum/`**: Berisi hasil pengerjaan tugas post-praktikum.
-  - Berisi soal-soal praktikum yang dapat dikerjakan kembali setelah praktikum selesai.
-  - Soal benar-benar sama dengan praktikum, sehingga yang sudah ada di folder ini, tidak akan ada lagi di folder **Praktikum**.
-- **`📄・README.md`**: File yang sedang Anda baca, penuh dengan informasi penting dan keren!  
+- **`📄・README.md`**: File yang sedang Anda baca, penuh dengan informasi penting dan keren! 👀  
+
+> ‼️・Soal praktikum dan soal pra-praktikum sama, sehingga yang suda ada di folder **`/Praktikum`** tidak akan ada lagi di folder **`/PraPraktikum`**, begitu juga sebaliknya.
 
 ---
 
@@ -91,6 +86,8 @@ Berikut adalah progres belajar saya dalam mata kuliah Algoritma dan Pemrograman:
 | 11 | Skema Standar (Bagian 4) | Minggu Ke-5 |
 | 12 | Pointer dalam Bahasa C | Minggu Ke-5 |
 | 13 | Abstract Data Type (ADT) | Minggu Ke-6 |
+| 14 | ADT List dan Implementasinya | Minggu Ke-7 |
+| 15 | ADT Set dan ADT Map/Hash | Minggu Ke-8 |
 
 ---
 
@@ -111,10 +108,10 @@ Berikut adalah beberapa tips yang mungkin berguna selama mengikuti mata kuliah i
 
 Berikut adalah beberapa sumber referensi yang bisa membantu Anda mempelajari bahasa C lebih dalam:
 
-- <a href="https://www.learn-c.org/" style="text-decoration: none;  font-weight: bold;">Learn C - Free Interactive C Tutorial</a> - Tutorial interaktif gratis untuk belajar C dari dasar.  
-- <a href="https://www.geeksforgeeks.org/c-programming-language/" style="text-decoration: none; font-weight: bold;">GeeksforGeeks C Programming</a> - Artikel dan contoh kode C yang lengkap.  
-- <a href="https://en.cppreference.com/w/c" style="text-decoration: none; font-weight: bold;">C Programming Documentation (cppreference.com)</a> - Dokumentasi resmi untuk referensi sintaks dan fungsi C.  
-- <a href="https://devdocs.io/c/" style="text-decoration: none; font-weight: bold;">C Programming Documentation (devdocs.io)</a> - Dokumentasi lengkap bahasa C yang digunakan juga untuk referensi belajar dalam praktikum.
+- **<a href="https://www.learn-c.org/" style="text-decoration: none;">Learn C - Free Interactive C Tutorial</a>** - Tutorial interaktif gratis untuk belajar C dari dasar.  
+- **<a href="https://www.geeksforgeeks.org/c-programming-language/" style="text-decoration: none;">GeeksforGeeks C Programming</a>** - Artikel dan contoh kode C yang lengkap.  
+- **<a href="https://en.cppreference.com/w/c" style="text-decoration: none;">C Programming Documentation (cppreference.com)</a>** - Dokumentasi resmi untuk referensi sintaks dan fungsi C.  
+- **<a href="https://devdocs.io/c/" style="text-decoration: none;">Devdocs.io - C Programming Language</a>** - Dokumentasi lengkap bahasa C yang digunakan juga untuk referensi belajar dalam praktikum.
 
 Gunakan sumber-sumber ini untuk memperdalam pemahaman Anda tentang bahasa C! 📖
 
@@ -131,12 +128,12 @@ Punya pertanyaan atau ingin berkolaborasi? Jangan ragu untuk menghubungi saya!
 
 <div style="display: flex; align-items: center;">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s ease;"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-    <span><b>・Website:</b> <a href="zulfanurhuda.my.id" style="text-decoration: none;">zulfanurhuda.my.id</a></span>
+    <span><b>・Website:</b> <a href="https://zulfanurhuda.my.id" style="text-decoration: none;">zulfanurhuda.my.id</a></span>
 </div>
 
 <div style="display: flex; align-items: center;">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#e1306c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="transition: transform 0.3s ease;"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-    <span><b>・Instagram:</b> <a href="https://instagram.com/zulfanurhuda._" style="text-decoration: none;">@zulfanurhuda._</a></span>
+    <span><b>・Instagram:</b> <a href="https://social.zulfanurhuda.my.id/instagram" style="text-decoration: none;">@zulfanurhuda._</a></span>
 </div>
 
 </br>
