@@ -51,7 +51,7 @@ Semua tugas dan praktikum di repository ini menggunakan **bahasa C**! 🎯 Bahas
 
 | Bahasa Pemrograman | Badge |
 |-------------------|-------|
-| C                 | ![C](https://img.shields.io/badge/language-C-00599C.svg?logo=c&logoColor=white) |
+| C                 | ![C](https://img.shields.io/badge/language-C-00599C.svg?style=for-the-badge&logo=c&logoColor=white&color=4A4A4A) |
 
 ---
 
@@ -61,9 +61,9 @@ Berikut adalah alat dan software yang saya gunakan selama mengerjakan tugas dan 
 
 | Tools/Software       | Kegunaan                          | Badge                                                                 |
 |----------------------|-----------------------------------|----------------------------------------------------------------------|
-| Visual Studio Code   | IDE untuk menulis kode            | ![VS Code](https://img.shields.io/badge/IDE-VS%20Code-007ACC.svg?logo=visual-studio-code&logoColor=white) |
-| GCC                  | Compiler untuk bahasa C           | ![GCC](https://img.shields.io/badge/Compiler-GCC-4A4A4A.svg?logo=gnu&logoColor=white) |
-| Git                  | Version control untuk repository  | ![Git](https://img.shields.io/badge/Version%20Control-Git-F05032.svg?logo=git&logoColor=white) |
+| Visual Studio Code   | IDE untuk menulis kode            | ![VS Code](https://img.shields.io/badge/IDE-VS%20Code-007ACC.svg?logo=visualstudiocode&style=for-the-badge&logoColor=white&color=4A4A4A) |
+| GCC                  | Compiler untuk bahasa C           | ![GCC](https://img.shields.io/badge/Compiler-GCC-4A4A4A.svg?style=for-the-badge&logo=gnu&logoColor=white&color=4A4A4A) |
+| Git                  | Version control untuk repository  | ![Git](https://img.shields.io/badge/Version%20Control-Git-F05032.svg?logo=git&style=for-the-badge&logoColor=white&color=4A4A4A) |
 
 ---
 
