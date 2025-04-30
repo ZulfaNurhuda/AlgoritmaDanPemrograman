@@ -18,7 +18,6 @@ void equalizeLength(char *num1, char *num2)
 
     if (effLen1 < maxEffLen)
     {
-
         int shift = maxEffLen - effLen1;
         if (isNeg1)
         {
@@ -296,7 +295,6 @@ int main()
     scanf("%s", number2);
 
     char *result = add(number1, number2);
-
     printf("%s\n", result);
 
     free(result);
