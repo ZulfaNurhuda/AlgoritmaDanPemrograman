@@ -1,178 +1,274 @@
-#ifndef _NIMONS_BALAP_H_
-#define _NIMONS_BALAP_H_
+/**
+ * --------------------------------------------------------------
+ * | @file NimonsBalap.h                                        |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Header file untuk ADT Kendaraan (Vehicle) dan Dimensi.     |
+ * | Mendefinisikan struktur data dan prototipe fungsi untuk    |
+ * | simulasi balap Nimons.                                     |
+ * --------------------------------------------------------------
+ */
 
-// Nama File: NimonsBalap.h
+#ifndef NIMONS_BALAP_H // Mengganti guard agar konsisten
+#define NIMONS_BALAP_H
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+// Include standar library yang mungkin dibutuhkan oleh deklarasi di bawah ini
+// atau oleh pengguna header ini. Umumnya, stdio.h, stdlib.h, string.h
+// lebih sering di-include di file .c kecuali tipe data dari library tersebut
+// (seperti FILE*) digunakan dalam deklarasi di header.
+// Untuk saat ini, kita kosongkan include library standar dari header ini,
+// dan pastikan ada di .c jika diperlukan.
 
-typedef struct Dimensi
+/* ***************************************************** */
+/* ********************** TIPE DATA ******************** */
+/* ***************************************************** */
+
+/**
+ * @struct Dimensions
+ * @brief Merepresentasikan dimensi fisik sebuah objek (panjang, lebar, tinggi).
+ */
+typedef struct Dimensions // Memberi nama pada struct
 {
-    int panjang;
-    int lebar;
-    int tinggi;
-} dimensi;
+    int length; /**< Panjang objek. */
+    int width;  /**< Lebar objek. */
+    int height; /**< Tinggi objek. */
+} Dimensions;
 
-typedef struct Kendaraan
+/**
+ * @struct Vehicle
+ * @brief Merepresentasikan sebuah kendaraan dengan berbagai atribut.
+ */
+typedef struct Vehicle // Memberi nama pada struct
 {
-    char kode[4];
-    int jumlahKursi;
-    int jumlahRoda;
-    int kecepatan;
-    dimensi dim;
-    int berat;
-    int hargaJual;
-} kendaraan;
+    char kode[4];          /**< Kode unik kendaraan (maks 3 char + null terminator). */
+    int seatCount;         /**< Jumlah kursi penumpang. */
+    int wheelCount;        /**< Jumlah roda kendaraan. */
+    int speed;             /**< Kecepatan maksimum kendaraan. */
+    Dimensions dimensions; /**< Dimensi fisik kendaraan (panjang, lebar, tinggi). */
+    int weight;            /**< Berat kendaraan. */
+    int sellingPrice;      /**< Harga jual kendaraan. */
+} Vehicle;
 
-/* Getter & Setter */
-char *getKode(kendaraan k);
-void setKode(kendaraan *k, char *kode);
+/* ***************************************************** */
+/* ************ GETTER & SETTER KENDARAAN ************** */
+/* ***************************************************** */
 
-int getJumlahKursi(kendaraan k);
-void setJumlahKursi(kendaraan *k, int jumlahKursi);
+// --- Kode ---
+/**
+ * @brief Mendapatkan salinan kode identifikasi kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return char* Pointer ke string kode yang baru dialokasikan.
+ *               Pemanggil bertanggung jawab membebaskan memori ini.
+ */
+char *getVehicleCode(Vehicle vehicle);
+/**
+ * @brief Mengatur kode identifikasi kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param newCode Kode baru (string).
+ */
+void setVehicleCode(Vehicle *vehicle, const char *newCode);
 
-int getJumlahRoda(kendaraan k);
-void setJumlahRoda(kendaraan *k, int jumlahRoda);
+// --- Jumlah Kursi ---
+/**
+ * @brief Mendapatkan jumlah kursi kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Jumlah kursi.
+ */
+int getVehicleSeatCount(Vehicle vehicle);
+/**
+ * @brief Mengatur jumlah kursi kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param seatCount Jumlah kursi baru.
+ */
+void setVehicleSeatCount(Vehicle *vehicle, int seatCount);
 
-int getKecepatan(kendaraan k);
-void setKecepatan(kendaraan *k, int kecepatan);
+// --- Jumlah Roda ---
+/**
+ * @brief Mendapatkan jumlah roda kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Jumlah roda.
+ */
+int getVehicleWheelCount(Vehicle vehicle);
+/**
+ * @brief Mengatur jumlah roda kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param wheelCount Jumlah roda baru.
+ */
+void setVehicleWheelCount(Vehicle *vehicle, int wheelCount);
 
-int getPanjang(kendaraan k);
-void setPanjang(kendaraan *k, int panjang);
+// --- Kecepatan ---
+/**
+ * @brief Mendapatkan kecepatan maksimum kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Kecepatan.
+ */
+int getVehicleSpeed(Vehicle vehicle);
+/**
+ * @brief Mengatur kecepatan maksimum kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param speed Kecepatan baru.
+ */
+void setVehicleSpeed(Vehicle *vehicle, int speed);
 
-int getLebar(kendaraan k);
-void setLebar(kendaraan *k, int lebar);
+// --- Dimensi: Panjang ---
+/**
+ * @brief Mendapatkan panjang dimensi kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Panjang.
+ */
+int getVehicleLength(Vehicle vehicle);
+/**
+ * @brief Mengatur panjang dimensi kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param length Panjang baru.
+ */
+void setVehicleLength(Vehicle *vehicle, int length);
 
-int getTinggi(kendaraan k);
-void setTinggi(kendaraan *k, int tinggi);
+// --- Dimensi: Lebar ---
+/**
+ * @brief Mendapatkan lebar dimensi kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Lebar.
+ */
+int getVehicleWidth(Vehicle vehicle);
+/**
+ * @brief Mengatur lebar dimensi kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param width Lebar baru.
+ */
+void setVehicleWidth(Vehicle *vehicle, int width);
 
-int getBerat(kendaraan k);
-void setBerat(kendaraan *k, int berat);
+// --- Dimensi: Tinggi ---
+/**
+ * @brief Mendapatkan tinggi dimensi kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Tinggi.
+ */
+int getVehicleHeight(Vehicle vehicle);
+/**
+ * @brief Mengatur tinggi dimensi kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param height Tinggi baru.
+ */
+void setVehicleHeight(Vehicle *vehicle, int height);
 
-int getHargaJual(kendaraan k);
-void setHargaJual(kendaraan *k, int hargaJual);
+// --- Berat ---
+/**
+ * @brief Mendapatkan berat kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Berat.
+ */
+int getVehicleWeight(Vehicle vehicle);
+/**
+ * @brief Mengatur berat kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param weight Berat baru.
+ */
+void setVehicleWeight(Vehicle *vehicle, int weight);
 
-/* Constructor */
+// --- Harga Jual ---
+/**
+ * @brief Mendapatkan harga jual kendaraan.
+ * @param vehicle Kendaraan sumber.
+ * @return int Harga jual.
+ */
+int getVehicleSellingPrice(Vehicle vehicle);
+/**
+ * @brief Mengatur harga jual kendaraan.
+ * @param vehicle Pointer ke kendaraan yang akan dimodifikasi.
+ * @param sellingPrice Harga jual baru.
+ */
+void setVehicleSellingPrice(Vehicle *vehicle, int sellingPrice);
+
+/* ***************************************************** */
+/* ******************** KONSTRUKTOR ******************** */
+/* ***************************************************** */
 
 /**
- * Buat kendaraan dengan parameter:
- * - kode
- * - jumlahKursi
- * - jumlahRoda
- * - kecepatan
- * - dimensi (panjang, lebar, tinggi)
- * - berat
- * - harga
+ * @brief Membuat objek kendaraan baru dengan parameter yang ditentukan.
+ * @param code Kode kendaraan (string).
+ * @param seatCount Jumlah kursi.
+ * @param wheelCount Jumlah roda.
+ * @param speed Kecepatan.
+ * @param dims Dimensi (struct Dimensions).
+ * @param weight Berat.
+ * @param sellingPrice Harga jual.
+ * @return Vehicle Objek kendaraan yang baru dibuat dan diinisialisasi.
  */
-kendaraan buatKendaraan(char *kode, int jumlahKursi, int jumlahRoda, int kecepatan, dimensi d, int berat, int hargaJual);
+Vehicle createVehicle(const char *code, int seatCount, int wheelCount, int speed, Dimensions dims, int weight, int sellingPrice);
 
 /**
- * Kendaraan default
- * - kode = "XXX"
- * - jumlahKursi = 4
- * - jumlahRoda = 4
- * - kecepatan = 10
- * - dim = 10x10x10
- * - berat = 100
- * - hargaJual = 100000
- *
- * Notes: Anda harus menggunakan fungsi buatKendaraan untuk membuat kendaraan
+ * @brief Menginisialisasi kendaraan dengan nilai-nilai default.
+ * @details Default: kode="XXX", kursi=4, roda=4, kecepatan=10, dim=10x10x10, berat=100, hargaJual=100000.
+ *          Menggunakan `createVehicle` secara internal.
+ * @param vehicle Pointer ke kendaraan yang akan diisi dengan nilai default.
  */
-void buatKendaraanDefault(kendaraan *k);
+void createDefaultVehicle(Vehicle *vehicle);
 
 /**
- * Lakukan input detail kendaraan dari user dengan format:
- * <kode> <jumlahKursi> <jumlahRoda> <kecepatan> <panjang> <lebar> <tinggi> <berat> <hargaJual>
- * Contoh: "XXX 4 4 10 10 10 10 1000 100000"
- *
- * Notes: Anda harus menggunakan fungsi buatKendaraan untuk membuat kendaraan
+ * @brief Membuat kendaraan dengan membaca input detail dari pengguna.
+ * @details Format input: `<kode> <jumlahKursi> <jumlahRoda> <kecepatan> <panjang> <lebar> <tinggi> <berat> <hargaJual>`
+ *          Menggunakan `createVehicle` secara internal.
+ * @param vehicle Pointer ke kendaraan yang akan diisi berdasarkan input.
  */
-void buatKendaraanInput(kendaraan *k);
+void createVehicleFromInput(Vehicle *vehicle);
 
-/* Methods */
-
-/**
- * Print detail kendaraan dengan format:
- * <kode> <jumlahKursi> <jumlahRoda> <kecepatan> <panjang> <lebar> <tinggi> <berat> <hargaJual>
- * Contoh: "XXX 4 4 10 10 10 10 1000 100000"
- *
- * Notes: Anda harus menggunakan getter untuk mendapatkan nilai dari kendaraan
- */
-void printDetailKendaraan(kendaraan k);
+/* ***************************************************** */
+/* ***************** FUNGSI OPERASIONAL **************** */
+/* ***************************************************** */
 
 /**
- * Print jenis kendaraan berdasarkan kriteria berikut:
- * jumlah roda <= 2 -> NimoRide
- * jumlah roda > 2 && jumlah roda <= 4 -> NimoCar
- * jumlah roda > 4 && jumlah roda <= 6 -> NimoTruck
- * jumlah roda > 6 -> NimoTanker
- *
- * Notes: Anda harus menggunakan getter untuk mendapatkan nilai dari kendaraan
+ * @brief Mencetak detail lengkap sebuah kendaraan.
+ * @details Format: `<kode> <kursi> <roda> <kecepatan> <panjang> <lebar> <tinggi> <berat> <harga>`
+ *          Menggunakan fungsi getter untuk mendapatkan nilai.
+ * @param vehicle Kendaraan yang detailnya akan dicetak.
  */
-void printJenisKendaraanBerdasarkanRoda(kendaraan k);
+void printVehicleDetails(Vehicle vehicle);
 
 /**
- * Print jenis kendaraan berdasarkan kriteria berikut:
- * kecepatan <= 10 -> NimoSlow
- * kecepatan > 10 && kecepatan <= 20 -> NimoFast
- * kecepatan > 20 && kecepatan <= 30 -> NimoSuperFast
- * kecepatan > 30 -> NimoSpeedy
- *
- * Notes: Anda harus menggunakan getter untuk mendapatkan nilai dari kendaraan
+ * @brief Mencetak jenis kendaraan berdasarkan jumlah rodanya.
+ * @details Kriteria: <=2 (NimoRide), >2 & <=4 (NimoCar), >4 & <=6 (NimoTruck), >6 (NimoTanker).
+ * @param vehicle Kendaraan yang akan diklasifikasikan.
  */
- void printJenisKendaraanBerdasarkanKecepatan(kendaraan k);
+void printVehicleTypeByWheels(Vehicle vehicle);
+
+/**
+ * @brief Mencetak jenis kendaraan berdasarkan kecepatannya.
+ * @details Kriteria: <=10 (NimoSlow), >10 & <=20 (NimoFast), >20 & <=30 (NimoSuperFast), >30 (NimoSpeedy).
+ * @param vehicle Kendaraan yang akan diklasifikasikan.
+ */
+ void printVehicleTypeBySpeed(Vehicle vehicle);
 
  /**
- * Print jenis kendaraan berdasarkan kriteria berikut:
- * berat <= 100 -> NimoLight
- * berat > 100 && berat <= 200 -> NimoMedium
- * berat > 200 && berat <= 300 -> NimoHeavy
- * berat > 300 -> NimoSuperHeavy
- *
- * Notes: Anda harus menggunakan getter untuk mendapatkan nilai dari kendaraan
+ * @brief Mencetak jenis kendaraan berdasarkan beratnya.
+ * @details Kriteria: <=100 (NimoLight), >100 & <=200 (NimoMedium), >200 & <=300 (NimoHeavy), >300 (NimoSuperHeavy).
+ * @param vehicle Kendaraan yang akan diklasifikasikan.
  */
-void printJenisKendaraanBerdasarkanBerat(kendaraan k);
+void printVehicleTypeByWeight(Vehicle vehicle);
 
 /**
- * Hitung harga kendaraan berdasarkan kriteria berikut:
- * harga 1 buah roda = 1000
- * harga 1 buah kursi = 10000
- * harga 1 cm panjang = 100
- * harga 1 cm lebar = 100
- * harga 1 cm tinggi = 100
- * harga 1 kg berat = 100
- *
- * apabila harga kendaraan yang dihitung lebih dari harga jual kendaraan,
- * maka tampilkan pesan "Nimons Rugi! Harga rakit mobil <kode> lebih mahal dari harga jual"
- *
- * apabila harga kendaraan yang dihitung kurang dari harga jual kendaraan,
- * maka tampilkan pesan "Nimons Kaya hehe! Harga rakit mobil <kode> lebih murah dari harga jual"
- *
- * apabila harga kendaraan yang dihitung sama dengan harga jual kendaraan,
- * maka tampilkan pesan "Nimons Pas! Harga rakit mobil <kode> sama dengan harga jual"
+ * @brief Menghitung dan melaporkan profitabilitas perakitan kendaraan.
+ * @details Membandingkan total biaya perakitan (berdasarkan roda, kursi, dimensi, berat)
+ *          dengan harga jual. Mencetak pesan "Nimons Rugi!", "Nimons Kaya hehe!", atau "Nimons Pas!".
+ * @param targetVehicle Pointer ke kendaraan yang akan dievaluasi.
  */
-void jualKendaraan(kendaraan *k);
+void checkAssemblyProfitability(Vehicle *targetVehicle);
 
 /**
- * Faktor penentu kemenangan dalam balap ini adalah:
- * - Kecepatan memiliki bobot 10
- * - Berat memiliki bobot -2
- * - Lebar memiliki bobot -1
- *
- * Tampilkan pesan "Nimons Balap! Kendaraan <kode> menang! dengan skor <skor>"
- *
- * Apabila kedua kendaraan memiliki skor yang sama,
- * tampilkan pesan "Nimons Balap! Kedua kendaraan <kode1> dan <kode2> seri! dengan skor <skor>"
- *
- * Notes: Skor dihitung dengan menjumlahkan faktor penentu kemenangan * bobot nya
- * contoh:
- * - Kecepatan = 20, bobot = 10 -> 20 * 10 = 200
- * - Berat = 1000, bobot = -2 -> 100 * -2 = -200
- * - Lebar = 10, bobot = -1 -> 10 * -1 = -10
- *
- * Skor = 200 - 200 - 10 = -10
+ * @brief Mengevaluasi dan melaporkan profitabilitas penjualan kendaraan (serupa dengan checkAssemblyProfitability).
+ * @deprecated Fungsi ini memiliki logika yang sangat mirip atau identik dengan `checkAssemblyProfitability`.
+ *             Pertimbangkan untuk menggunakan salah satu saja.
+ * @param vehicle Pointer ke kendaraan yang akan dievaluasi.
  */
-void pBalap(kendaraan *k1, kendaraan *k2);
+void evaluateSaleProfitability(Vehicle *vehicle);
 
-#endif
+/**
+ * @brief Mensimulasikan balapan antara dua kendaraan dan menentukan pemenangnya.
+ * @details Skor dihitung: `kecepatan*10 - berat*2 - lebar`.
+ *          Mencetak pesan pemenang atau seri beserta skor.
+ * @param vehicle1 Pointer ke kendaraan pertama.
+ * @param vehicle2 Pointer ke kendaraan kedua.
+ */
+void raceVehicles(Vehicle *vehicle1, Vehicle *vehicle2);
+
+#endif // NIMONS_BALAP_H

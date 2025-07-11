@@ -5,220 +5,262 @@
  * | @details                                                   |
  * | Implementasi ADT Graph untuk NimonsGram, sebuah jejaring   |
  * | sosial sederhana. Direpresentasikan sebagai directed graph |
- * | menggunakan multi-list.                                    |
+ * | menggunakan multi-list (adjacency list).                   |
  * --------------------------------------------------------------
  */
 
 #include "nimonsgram.h"
-#include <stdlib.h>
-#include <stdio.h>
+#include <stdlib.h> // Untuk malloc dan free
+#include <stdio.h>  // Untuk printf pada printGraph
 
 /**
  * @brief Menginisialisasi sebuah graph dengan satu node awal.
- * @param initialNodeId ID dari node pertama yang dibuat.
+ * @details Graph akan memiliki satu node dengan ID `rootNodeId`.
+ *          Jika alokasi node gagal, graph akan tetap kosong.
+ * @param rootNodeId ID dari node pertama yang akan dibuat.
  * @param graph Pointer ke Graph yang akan diinisialisasi.
+ * @note I.S. : graph sembarang, rootNodeId terdefinisi.
+ * @note F.S. : Terbentuk graph dengan satu simpul ber-ID rootNodeId jika alokasi berhasil,
+ *              atau graph kosong (FIRST(*graph) == NIL) jika alokasi gagal.
  */
-void createGraph(int initialNodeId, Graph *graph)
+void createGraph(int rootNodeId, Graph *graph)
 {
-    FIRST(*graph) = NIL;
-    AdrNode newNode = newGraphNode(initialNodeId);
+    FIRST(*graph) = NIL; // Inisialisasi graph kosong
+    AdrNode newNode = newGraphNode(rootNodeId);
     if (newNode != NIL)
     {
-        FIRST(*graph) = newNode;
+        FIRST(*graph) = newNode; // Set node baru sebagai node pertama
     }
 }
 
 /**
  * @brief Mengalokasikan dan menginisialisasi sebuah node graph baru.
- * @param nodeId ID untuk node baru.
- * @return Alamat dari node yang baru dibuat, atau NIL jika alokasi gagal.
+ * @details Node yang dibuat akan memiliki ID `nodeValue`, jumlah predecessor (NPRED) 0,
+ *          dan pointer TRAIL (successor list) serta NEXTNODE (next main node) diatur ke NIL.
+ * @param nodeValue ID untuk node baru.
+ * @return AdrNode Alamat dari node yang baru dibuat, atau NIL jika alokasi memori gagal.
+ * @note I.S. : nodeValue terdefinisi.
+ * @note F.S. : Dialokasikan node baru dengan ID = nodeValue, NPRED = 0, TRAIL = NIL, NEXTNODE = NIL.
  */
-AdrNode newGraphNode(int nodeId)
+AdrNode newGraphNode(int nodeValue)
 {
     AdrNode newNode = (AdrNode)malloc(sizeof(Node));
     if (newNode == NIL)
     {
-        return NIL;
+        return NIL; // Gagal alokasi
     }
     // Inisialisasi semua atribut node.
-    ID(newNode) = nodeId;
-    NPRED(newNode) = 0; // Jumlah predecessor (follower) awal adalah 0.
-    TRAIL(newNode) = NIL; // Belum menunjuk ke successor (following) manapun.
+    ID(newNode) = nodeValue;
+    NPRED(newNode) = 0;      // Jumlah predecessor (follower) awal adalah 0.
+    TRAIL(newNode) = NIL;    // Belum menunjuk ke successor (following) manapun.
     NEXTNODE(newNode) = NIL; // Belum terhubung ke node lain dalam list utama.
     return newNode;
 }
 
 /**
  * @brief Dealokasi memori dari sebuah node graph.
- * @param nodeToDealloc Pointer ke node yang akan di-dealokasi.
+ * @param node Pointer ke node yang akan di-dealokasi.
+ *             Setelah dealokasi, pointer sebaiknya tidak digunakan lagi.
+ * @note I.S. : node mungkin NIL atau menunjuk ke area memori yang valid.
+ * @note F.S. : Jika node tidak NIL, memori yang ditunjuk oleh node dibebaskan.
  */
-void deallocGraphNode(AdrNode nodeToDealloc)
+void deallocGraphNode(AdrNode node)
 {
-    if (nodeToDealloc != NIL)
+    if (node != NIL)
     {
-        free(nodeToDealloc);
+        free(node);
+        // Tidak mengatur node = NIL di sini karena node adalah pass-by-value (pointer copy)
     }
 }
 
 /**
- * @brief Mengalokasikan dan menginisialisasi sebuah node successor baru.
- * @details Node ini digunakan dalam adjacency list untuk menunjuk ke node lain.
- * @param successorNode Pointer ke node graph yang akan menjadi successor.
- * @return Alamat dari node successor yang baru dibuat, atau NIL jika alokasi gagal.
+ * @brief Mengalokasikan dan menginisialisasi sebuah node successor baru (edge).
+ * @details Node ini digunakan dalam adjacency list (TRAIL) untuk menunjuk ke node lain (successor).
+ * @param targetSuccessorNode Pointer ke node graph yang akan menjadi successor.
+ * @return AdrSuccNode Alamat dari node successor yang baru dibuat, atau NIL jika alokasi gagal.
+ * @note I.S. : targetSuccessorNode terdefinisi (bisa NIL jika memang ingin membuat edge ke NIL,
+ *              walaupun umumnya menunjuk ke node valid).
+ * @note F.S. : Dialokasikan SuccNode baru dengan SUCC menunjuk ke targetSuccessorNode dan NEXTSUCC = NIL.
  */
-AdrSuccNode newSuccNode(AdrNode successorNode)
+AdrSuccNode newSuccNode(AdrNode targetSuccessorNode)
 {
     AdrSuccNode newNode = (AdrSuccNode)malloc(sizeof(SuccNode));
     if (newNode == NIL)
     {
-        return NIL;
+        return NIL; // Gagal alokasi
     }
-    SUCC(newNode) = successorNode;
+    SUCC(newNode) = targetSuccessorNode;
     NEXTSUCC(newNode) = NIL;
     return newNode;
 }
 
 /**
- * @brief Dealokasi memori dari sebuah node successor.
- * @param nodeToDealloc Pointer ke node successor yang akan di-dealokasi.
+ * @brief Dealokasi memori dari sebuah node successor (edge).
+ * @param node Pointer ke node successor yang akan di-dealokasi.
+ * @note I.S. : node mungkin NIL atau menunjuk ke area memori yang valid.
+ * @note F.S. : Jika node tidak NIL, memori yang ditunjuk oleh node dibebaskan.
  */
-void deallocSuccNode(AdrSuccNode nodeToDealloc)
+void deallocSuccNode(AdrSuccNode node)
 {
-    if (nodeToDealloc != NIL)
+    if (node != NIL)
     {
-        free(nodeToDealloc);
+        free(node);
     }
 }
 
 /**
  * @brief Mencari sebuah node dalam graph berdasarkan ID-nya.
  * @param graph Graph yang akan dicari.
- * @param nodeId ID dari node yang dicari.
- * @return Alamat dari node jika ditemukan, atau NIL jika tidak.
+ * @param targetNodeId ID dari node yang dicari.
+ * @return AdrNode Alamat dari node jika ditemukan, atau NIL jika tidak.
+ * @note I.S. : graph dan targetNodeId terdefinisi.
+ * @note F.S. : Mengembalikan alamat node dengan ID targetNodeId jika ada, atau NIL.
  */
-AdrNode searchNode(Graph graph, int nodeId)
+AdrNode searchNode(Graph graph, int targetNodeId)
 {
     AdrNode currentNode = FIRST(graph);
-    // Telusuri list utama node.
+    // Telusuri list utama node dari awal.
     while (currentNode != NIL)
     {
-        if (ID(currentNode) == nodeId)
+        if (ID(currentNode) == targetNodeId)
         {
-            return currentNode;
+            return currentNode; // Node ditemukan
         }
-        currentNode = NEXTNODE(currentNode);
+        currentNode = NEXTNODE(currentNode); // Pindah ke node berikutnya
     }
-    return NIL;
+    return NIL; // Node tidak ditemukan
 }
 
 /**
- * @brief Mencari sebuah edge (sisi) dari node predecessor ke successor.
+ * @brief Mencari sebuah edge (sisi berarah) dari node predecessor ke successor.
  * @param graph Graph yang akan dicari.
  * @param predecessorId ID dari node asal (predecessor).
  * @param successorId ID dari node tujuan (successor).
- * @return Alamat dari node successor (edge) jika ditemukan, atau NIL jika tidak.
+ * @return AdrSuccNode Alamat dari node dalam list successor (TRAIL) predecessorNode
+ *                     yang menunjuk ke successorNode, atau NIL jika edge tidak ditemukan.
+ * @note I.S. : graph, predecessorId, successorId terdefinisi.
+ * @note F.S. : Mengembalikan alamat SuccNode jika edge ada, NIL jika tidak.
  */
 AdrSuccNode searchEdge(Graph graph, int predecessorId, int successorId)
 {
     AdrNode predecessorNode = searchNode(graph, predecessorId);
     if (predecessorNode == NIL)
     {
-        return NIL;
+        return NIL; // Node predecessor tidak ditemukan
     }
 
-    // Telusuri list successor dari node predecessor.
+    // Telusuri list successor (TRAIL) dari node predecessor.
     AdrSuccNode currentEdge = TRAIL(predecessorNode);
     while (currentEdge != NIL)
     {
-        if (ID(SUCC(currentEdge)) == successorId)
+        // Periksa apakah successor dari edge saat ini adalah node yang dicari.
+        if (SUCC(currentEdge) != NIL && ID(SUCC(currentEdge)) == successorId)
         {
-            return currentEdge;
+            return currentEdge; // Edge ditemukan
         }
-        currentEdge = NEXTSUCC(currentEdge);
+        currentEdge = NEXTSUCC(currentEdge); // Pindah ke edge berikutnya
     }
-    return NIL;
+    return NIL; // Edge tidak ditemukan
 }
 
 /**
  * @brief Memasukkan sebuah node baru ke dalam graph.
- * @details Jika node dengan ID yang sama sudah ada, tidak ada node baru yang dibuat.
+ * @details Jika node dengan ID yang sama sudah ada, tidak ada node baru yang dibuat,
+ *          dan `createdOrFoundNode` akan menunjuk ke node yang sudah ada.
+ *          Jika node belum ada, node baru akan dibuat dan ditambahkan ke akhir list utama graph.
  * @param graph Pointer ke Graph.
- * @param nodeId ID dari node yang akan dimasukkan.
- * @param nodePointer Pointer output untuk menyimpan alamat node yang baru dibuat atau yang sudah ada.
+ * @param newNodeId ID dari node yang akan dimasukkan atau dicari.
+ * @param createdOrFoundNode Pointer output untuk menyimpan alamat node yang baru dibuat atau yang sudah ada.
+ *                           Akan bernilai NIL jika alokasi gagal.
+ * @note I.S. : graph dan newNodeId terdefinisi. createdOrFoundNode adalah pointer valid.
+ * @note F.S. : Jika node dengan newNodeId sudah ada, createdOrFoundNode menunjuk ke node tersebut.
+ *              Jika belum ada, node baru dialokasikan, ditambahkan ke akhir list node utama,
+ *              dan createdOrFoundNode menunjuk ke node baru tersebut.
+ *              Jika alokasi gagal, createdOrFoundNode akan NIL.
  */
-void insertNode(Graph *graph, int nodeId, AdrNode *nodePointer)
+void insertNode(Graph *graph, int newNodeId, AdrNode *createdOrFoundNode)
 {
-    // Cek apakah node sudah ada.
-    *nodePointer = searchNode(*graph, nodeId);
-    if (*nodePointer != NIL)
+    // Cek apakah node sudah ada dalam graph.
+    *createdOrFoundNode = searchNode(*graph, newNodeId);
+    if (*createdOrFoundNode != NIL)
     {
-        return; // Node sudah ada, tidak perlu insert.
+        return; // Node sudah ada, tidak perlu insert, pointer sudah menunjuk ke node yang ada.
     }
 
     // Buat node baru jika belum ada.
-    *nodePointer = newGraphNode(nodeId);
-    if (*nodePointer == NIL) return; // Gagal alokasi.
+    *createdOrFoundNode = newGraphNode(newNodeId);
+    if (*createdOrFoundNode == NIL)
+    {
+        return; // Gagal alokasi memori untuk node baru.
+    }
 
     // Tambahkan node baru ke akhir list utama graph.
-    if (FIRST(*graph) == NIL)
+    if (FIRST(*graph) == NIL) // Jika graph kosong
     {
-        FIRST(*graph) = *nodePointer;
+        FIRST(*graph) = *createdOrFoundNode;
     }
-    else
+    else // Jika graph tidak kosong, cari node terakhir
     {
         AdrNode currentNode = FIRST(*graph);
         while (NEXTNODE(currentNode) != NIL)
         {
             currentNode = NEXTNODE(currentNode);
         }
-        NEXTNODE(currentNode) = *nodePointer;
+        NEXTNODE(currentNode) = *createdOrFoundNode; // Sambungkan node baru di akhir.
     }
 }
 
 /**
- * @brief Memasukkan sebuah edge (sisi) dari predecessor ke successor.
- * @details Jika node predecessor atau successor belum ada, mereka akan dibuat terlebih dahulu.
+ * @brief Memasukkan sebuah edge (sisi berarah) dari predecessor ke successor.
+ * @details Jika node predecessor atau successor belum ada dalam graph,
+ *          mereka akan dibuat (menggunakan `insertNode`) terlebih dahulu.
+ *          Jika edge sudah ada, tidak ada operasi yang dilakukan.
  * @param graph Pointer ke Graph.
- * @param predecessorId ID node asal.
- * @param successorId ID node tujuan.
+ * @param predecessorId ID node asal (yang "mem-follow").
+ * @param successorId ID node tujuan (yang "di-follow").
+ * @note I.S. : graph, predecessorId, successorId terdefinisi.
+ * @note F.S. : Edge <predecessorId, successorId> ditambahkan ke graph.
+ *              NPRED dari successorId bertambah satu.
+ *              Jika node belum ada, akan dibuat. Jika alokasi gagal, edge tidak ditambahkan.
  */
 void insertEdge(Graph *graph, int predecessorId, int successorId)
 {
     // Jika edge sudah ada, tidak melakukan apa-apa.
     if (searchEdge(*graph, predecessorId, successorId) != NIL)
+    {
         return;
+    }
 
     // Cari atau buat node untuk predecessor.
-    AdrNode predecessorNode = searchNode(*graph, predecessorId);
-    if (predecessorNode == NIL)
-    {
-        insertNode(graph, predecessorId, &predecessorNode);
-    }
+    AdrNode predecessorNode; // Tidak perlu inisialisasi NIL karena akan diisi oleh insertNode
+    insertNode(graph, predecessorId, &predecessorNode);
+    if (predecessorNode == NIL) return; // Gagal membuat/menemukan predecessorNode
 
     // Cari atau buat node untuk successor.
-    AdrNode successorNode = searchNode(*graph, successorId);
-    if (successorNode == NIL)
-    {
-        insertNode(graph, successorId, &successorNode);
-    }
+    AdrNode successorNode;
+    insertNode(graph, successorId, &successorNode);
+    if (successorNode == NIL) return; // Gagal membuat/menemukan successorNode
 
     // Buat node edge baru yang menunjuk ke successor.
     AdrSuccNode newEdge = newSuccNode(successorNode);
-    if (newEdge == NIL) return; // Gagal alokasi.
+    if (newEdge == NIL)
+    {
+        return; // Gagal alokasi memori untuk edge baru.
+    }
 
-    // Tambahkan edge baru ke akhir list successor dari predecessor.
-    if (TRAIL(predecessorNode) == NIL)
+    // Tambahkan edge baru ke akhir list successor (TRAIL) dari predecessor.
+    if (TRAIL(predecessorNode) == NIL) // Jika predecessor belum memiliki successor
     {
         TRAIL(predecessorNode) = newEdge;
     }
-    else
+    else // Jika sudah ada, cari akhir list successor
     {
         AdrSuccNode currentEdge = TRAIL(predecessorNode);
         while (NEXTSUCC(currentEdge) != NIL)
         {
             currentEdge = NEXTSUCC(currentEdge);
         }
-        NEXTSUCC(currentEdge) = newEdge;
+        NEXTSUCC(currentEdge) = newEdge; // Sambungkan edge baru di akhir.
     }
 
     // Tambah jumlah predecessor (follower) dari node successor.
@@ -226,55 +268,68 @@ void insertEdge(Graph *graph, int predecessorId, int successorId)
 }
 
 /**
- * @brief Menghapus sebuah node dan semua edge yang terhubung dengannya.
+ * @brief Menghapus sebuah node dan semua edge yang terhubung dengannya dari graph.
+ * @details Proses ini melibatkan:
+ *          1. Menghapus semua edge keluar dari `nodeToDelete` (mengurangi NPRED successor).
+ *          2. Menghapus semua edge masuk ke `nodeToDelete` dari node lain.
+ *          3. Menghapus `nodeToDelete` dari list utama node graph.
  * @param graph Pointer ke Graph.
- * @param nodeId ID dari node yang akan dihapus.
+ * @param targetNodeId ID dari node yang akan dihapus.
+ * @note I.S. : graph dan targetNodeId terdefinisi. Node dengan targetNodeId mungkin ada atau tidak.
+ * @note F.S. : Jika node dengan targetNodeId ada, node tersebut dan semua edge terkait
+ *              dihapus dari graph. Memori yang digunakan dibebaskan.
+ *              Jika node tidak ada, graph tidak berubah.
  */
-void deleteNode(Graph *graph, int nodeId)
+void deleteNode(Graph *graph, int targetNodeId)
 {
-    AdrNode nodeToDelete = searchNode(*graph, nodeId);
-    if (nodeToDelete == NIL) return; // Node tidak ada.
+    AdrNode nodeToDelete = searchNode(*graph, targetNodeId);
+    if (nodeToDelete == NIL)
+    {
+        return; // Node tidak ada dalam graph.
+    }
 
-    // Langkah 1: Hapus semua edge yang keluar dari nodeToDelete (following).
-    // Dan kurangi jumlah NPRED dari setiap successor-nya.
+    // Langkah 1: Hapus semua edge yang keluar dari nodeToDelete (daftar "following").
+    //            Dan kurangi jumlah NPRED (follower) dari setiap successor-nya.
     AdrSuccNode currentFollowing = TRAIL(nodeToDelete);
     while (currentFollowing != NIL)
     {
         AdrSuccNode tempFollowing = currentFollowing;
-        currentFollowing = NEXTSUCC(currentFollowing);
+        currentFollowing = NEXTSUCC(currentFollowing); // Simpan pointer sebelum dealokasi
 
         if (SUCC(tempFollowing) != NIL)
         {
-            NPRED(SUCC(tempFollowing))--;
+            NPRED(SUCC(tempFollowing))--; // Kurangi jumlah follower dari node yang di-follow
         }
-        deallocSuccNode(tempFollowing);
+        deallocSuccNode(tempFollowing); // Dealokasi edge keluar
     }
-    TRAIL(nodeToDelete) = NIL;
+    TRAIL(nodeToDelete) = NIL; // Reset daftar following dari nodeToDelete
 
-    // Langkah 2: Hapus semua edge yang masuk ke nodeToDelete dari node lain.
+    // Langkah 2: Hapus semua edge yang masuk ke nodeToDelete dari node lain (menghapus nodeToDelete dari daftar "following" node lain).
     AdrNode currentNode = FIRST(*graph);
     while (currentNode != NIL)
     {
-        if (currentNode != nodeToDelete)
+        // Hanya proses jika currentNode bukan node yang akan dihapus
+        if (ID(currentNode) != ID(nodeToDelete)) // Gunakan ID untuk perbandingan
         {
             AdrSuccNode currentTrail = TRAIL(currentNode);
             AdrSuccNode prevTrail = NIL;
 
             while (currentTrail != NIL)
             {
+                // Jika edge saat ini menunjuk ke nodeToDelete
                 if (SUCC(currentTrail) == nodeToDelete)
                 {
-                    AdrSuccNode edgeToDelete = currentTrail;
-                    if (prevTrail == NIL)
+                    AdrSuccNode edgeToDeleteFromTrail = currentTrail;
+                    if (prevTrail == NIL) // Jika edge yang dihapus adalah head dari TRAIL
                     {
                         TRAIL(currentNode) = NEXTSUCC(currentTrail);
                     }
-                    else
+                    else // Jika edge yang dihapus ada di tengah atau akhir TRAIL
                     {
                         NEXTSUCC(prevTrail) = NEXTSUCC(currentTrail);
                     }
-                    currentTrail = NEXTSUCC(currentTrail);
-                    deallocSuccNode(edgeToDelete);
+                    currentTrail = NEXTSUCC(currentTrail); // Pindah ke edge berikutnya di TRAIL
+                    deallocSuccNode(edgeToDeleteFromTrail); // Dealokasi edge masuk
                 }
                 else
                 {
@@ -283,98 +338,124 @@ void deleteNode(Graph *graph, int nodeId)
                 }
             }
         }
-        currentNode = NEXTNODE(currentNode);
+        currentNode = NEXTNODE(currentNode); // Pindah ke node utama berikutnya
     }
 
-    // Langkah 3: Hapus node itu sendiri dari list utama graph.
-    if (FIRST(*graph) == nodeToDelete)
+    // Langkah 3: Hapus nodeToDelete itu sendiri dari list utama graph.
+    if (FIRST(*graph) == nodeToDelete) // Jika nodeToDelete adalah node pertama
     {
         FIRST(*graph) = NEXTNODE(nodeToDelete);
     }
-    else
+    else // Jika nodeToDelete bukan node pertama
     {
         AdrNode prevNode = FIRST(*graph);
+        // Cari node sebelum nodeToDelete
         while (prevNode != NIL && NEXTNODE(prevNode) != nodeToDelete)
         {
             prevNode = NEXTNODE(prevNode);
         }
-        if (prevNode != NIL)
+        if (prevNode != NIL) // Jika prevNode ditemukan (seharusnya selalu, kecuali graph rusak)
         {
-            NEXTNODE(prevNode) = NEXTNODE(nodeToDelete);
+            NEXTNODE(prevNode) = NEXTNODE(nodeToDelete); // Bypass nodeToDelete
         }
     }
 
-    deallocGraphNode(nodeToDelete);
+    deallocGraphNode(nodeToDelete); // Dealokasi memori nodeToDelete
 }
 
 /**
- * @brief Mencetak representasi graph.
- * @param g Graph yang akan dicetak.
+ * @brief Mencetak representasi graph ke standar output.
+ * @details Setiap node dicetak diikuti dengan daftar successor (node yang di-follow).
+ *          Format: `nodeId -> succ1Id -> succ2Id ...`
+ *          Jika graph kosong, pesan "Graph kosong" dicetak.
+ * @param graph Graph yang akan dicetak.
+ * @note I.S. : graph terdefinisi (bisa kosong).
+ * @note F.S. : Isi graph dicetak ke layar. Setiap baris diakhiri newline.
  */
-void printGraph(Graph g)
+void printGraph(Graph graph)
 {
-    if (FIRST(g) == NIL)
+    if (FIRST(graph) == NIL)
     {
         printf("Graph kosong\n");
         return;
     }
 
-    AdrNode currentNode = FIRST(g);
+    AdrNode currentNode = FIRST(graph);
     while (currentNode != NIL)
     {
-        printf("%d", ID(currentNode));
-        AdrSuccNode tempEdge = TRAIL(currentNode);
+        printf("%d", ID(currentNode)); // Cetak ID node saat ini
+        AdrSuccNode tempEdge = TRAIL(currentNode); // Ambil daftar successor
         while (tempEdge != NIL)
         {
-            printf(" -> %d", ID(SUCC(tempEdge)));
-            tempEdge = NEXTSUCC(tempEdge);
+            // Cetak ID dari setiap successor
+            if (SUCC(tempEdge) != NIL) // Pastikan successor tidak NIL sebelum akses ID
+            {
+                printf(" -> %d", ID(SUCC(tempEdge)));
+            }
+            tempEdge = NEXTSUCC(tempEdge); // Pindah ke successor berikutnya
         }
-        printf("\n");
-        currentNode = NEXTNODE(currentNode);
+        printf("\n"); // Baris baru untuk setiap node
+        currentNode = NEXTNODE(currentNode); // Pindah ke node utama berikutnya
     }
 }
 
 /**
- * @brief Menemukan "Nimons Paling Digemari" (NPD), yaitu node dengan follower terbanyak.
- * @param g Graph yang akan dicari.
- * @param maxFollower Pointer output untuk menyimpan jumlah follower dari NPD.
- * @return Alamat dari node NPD, atau NIL jika graph kosong.
+ * @brief Menemukan "Nimons Paling Digemari" (NPD), yaitu node dengan jumlah follower (NPRED) terbanyak.
+ * @details Jika ada beberapa node dengan jumlah follower maksimal yang sama,
+ *          fungsi ini akan mengembalikan salah satunya (biasanya yang pertama ditemui).
+ * @param graph Graph yang akan dicari.
+ * @param maxFollowers Pointer output untuk menyimpan jumlah follower dari NPD.
+ *                     Akan diisi 0 jika graph kosong.
+ * @return AdrNode Alamat dari node NPD, atau NIL jika graph kosong.
+ * @note I.S. : graph terdefinisi. maxFollowers adalah pointer valid.
+ * @note F.S. : Mengembalikan node dengan NPRED terbanyak. maxFollowers diisi dengan nilai NPRED tersebut.
  */
-AdrNode findNPD(Graph g, int *maxFollower)
+AdrNode findNPD(Graph graph, int *maxFollowers)
 {
-    AdrNode npd = NIL;
-    AdrNode currentNode = FIRST(g);
+    AdrNode npdNode = NIL;
+    AdrNode currentNode = FIRST(graph);
+    *maxFollowers = 0; // Inisialisasi default
+
+    if (isEmpty(graph)) { // Menggunakan isEmpty dari nimonsgram.h jika ada, atau FIRST(graph) == NIL
+        return NIL;
+    }
 
     // Iterasi melalui semua node untuk mencari yang punya NPRED (follower) terbanyak.
     while (currentNode != NIL)
     {
-        if (npd == NIL)
+        if (npdNode == NIL || NPRED(currentNode) > *maxFollowers)
         {
-            npd = currentNode;
+            npdNode = currentNode;
+            *maxFollowers = NPRED(currentNode);
         }
-        else if (NPRED(currentNode) > NPRED(npd))
-        {
-            npd = currentNode;
-        }
+        // Jika NPRED sama, prioritas tidak ditentukan (ambil yang pertama ditemukan atau sesuai urutan list)
         currentNode = NEXTNODE(currentNode);
     }
-
-    // Simpan jumlah follower dari NPD yang ditemukan.
-    *maxFollower = (npd == NIL) ? 0 : NPRED(npd);
-    return npd;
+    return npdNode;
 }
 
 /**
- * @brief Menemukan "Nimons Misterius", yaitu node dengan following paling sedikit.
- * @param g Graph yang akan dicari.
- * @param minFollowing Pointer output untuk menyimpan jumlah following dari Nimons Misterius.
- * @return Alamat dari node Nimons Misterius, atau NIL jika graph kosong.
+ * @brief Menemukan "Nimons Misterius", yaitu node dengan jumlah following (successor) paling sedikit.
+ * @details Jika ada beberapa node dengan jumlah following minimal yang sama,
+ *          fungsi ini akan mengembalikan salah satunya (biasanya yang pertama ditemui).
+ * @param graph Graph yang akan dicari.
+ * @param minFollowingCount Pointer output untuk menyimpan jumlah following dari Nimons Misterius.
+ *                          Akan diisi 0 jika graph kosong.
+ * @return AdrNode Alamat dari node Nimons Misterius, atau NIL jika graph kosong.
+ * @note I.S. : graph terdefinisi. minFollowingCount adalah pointer valid.
+ * @note F.S. : Mengembalikan node dengan jumlah TRAIL (successor) paling sedikit.
+ *              minFollowingCount diisi dengan jumlah successor tersebut.
  */
-AdrNode findMisterius(Graph g, int *minFollowing)
+AdrNode findMisterius(Graph graph, int *minFollowingCount)
 {
-    AdrNode misterius = NIL;
-    AdrNode currentNode = FIRST(g);
-    int tempMinFollowing = 99999; // Inisialisasi dengan nilai besar.
+    AdrNode misteriusNode = NIL;
+    AdrNode currentNode = FIRST(graph);
+    *minFollowingCount = -1; // Inisialisasi agar perbandingan pertama selalu berhasil jika graph tidak kosong
+
+    if (isEmpty(graph)) {
+        *minFollowingCount = 0;
+        return NIL;
+    }
 
     // Iterasi melalui semua node.
     while (currentNode != NIL)
@@ -389,15 +470,14 @@ AdrNode findMisterius(Graph g, int *minFollowing)
         }
 
         // Bandingkan dengan nilai minimum sementara.
-        if (tempMinFollowing > followingCount)
+        // Jika ini node pertama atau jumlah following lebih kecil dari minimum saat ini.
+        if (misteriusNode == NIL || followingCount < *minFollowingCount)
         {
-            tempMinFollowing = followingCount;
-            misterius = currentNode;
+            *minFollowingCount = followingCount;
+            misteriusNode = currentNode;
         }
-
+        // Jika jumlah following sama, prioritas tidak ditentukan (ambil yang pertama atau sesuai urutan)
         currentNode = NEXTNODE(currentNode);
     }
-
-    *minFollowing = (misterius == NIL) ? 0 : tempMinFollowing;
-    return misterius;
+    return misteriusNode;
 }

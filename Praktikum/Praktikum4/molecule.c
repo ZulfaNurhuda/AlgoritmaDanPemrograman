@@ -1,272 +1,217 @@
-#include "molecule.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/**
+ * --------------------------------------------------------------
+ * | @file molecule.c                                           |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Implementasi ADT Molekul, termasuk fungsi untuk membuat,   |
+ * | menambah atom, menghitung berat molekul, mencetak formula, |
+ * | dan operasi lainnya pada molekul.                          |
+ * --------------------------------------------------------------
+ */
+
+#include "molecule.h" // Asumsi header ini mendefinisikan struct Molecule, AtomInfo, MAX_ATOM_TYPES, dll.
+#include <stdio.h>    // Untuk printf
+#include <stdlib.h>   // Untuk qsort, malloc, free (meskipun malloc/free tidak eksplisit di sini jika createMolecule di .h)
+#include <string.h>   // Untuk strcmp, strcpy
+#include <stdbool.h>  // Untuk tipe data bool pada areEqual dan canSubtract
 
 // --- Implementasi Fungsi ADT Molekul ---
 
-void createMolecule(Molecule *m)
+/**
+ * @brief Menginisialisasi sebuah molekul menjadi kosong.
+ * @details Mengatur jumlah tipe atom menjadi 0 dan mengosongkan array atom.
+ * @param molecule Pointer ke Molekul yang akan diinisialisasi.
+ * @note I.S. : `molecule` adalah pointer valid.
+ * @note F.S. : `molecule->atomTypeCount` adalah 0. Setiap `AtomInfo` dalam `molecule->atoms` diinisialisasi (count=0, symbol="").
+ */
+void createMolecule(Molecule *molecule)
 {
-    // TODO: Implementasikan fungsi ini
-    if (m == NULL)
+    if (molecule == NULL)
     {
-        return;
+        return; // Menghindari dereferencing NULL pointer.
     }
 
-    m->numAtomTypes = 0;
+    molecule->atomTypeCount = 0;
     for (int i = 0; i < MAX_ATOM_TYPES; i++)
     {
-        m->atoms[i].count = 0;
-        m->atoms[i].symbol[0] = '\0';
+        molecule->atoms[i].count = 0;
+        molecule->atoms[i].symbol[0] = '\0'; // Mengosongkan string simbol.
     }
 }
 
-void addAtom(Molecule *m, const char *symbol, int count)
+/**
+ * @brief Menambahkan sejumlah atom dengan simbol tertentu ke dalam molekul.
+ * @details Jika atom dengan simbol tersebut sudah ada, jumlahnya akan ditambahkan.
+ *          Jika belum ada dan masih ada kapasitas, atom baru akan ditambahkan.
+ * @param molecule Pointer ke Molekul yang akan dimodifikasi.
+ * @param atomSymbol Simbol atom yang akan ditambahkan (misal, "H", "O").
+ * @param atomCount Jumlah atom yang akan ditambahkan (harus > 0).
+ * @note I.S. : `molecule` terdefinisi, `atomSymbol` valid, `atomCount` > 0.
+ * @note F.S. : Jumlah atom `atomSymbol` dalam `molecule` bertambah sebanyak `atomCount`,
+ *              atau atom baru ditambahkan jika belum ada dan kapasitas memungkinkan.
+ */
+void addAtom(Molecule *molecule, const char *atomSymbol, int atomCount)
 {
-    // TODO: Implementasikan fungsi ini
-    if (m == NULL || symbol == NULL || symbol[0] == '\0' || count <= 0)
+    // Validasi input.
+    if (molecule == NULL || atomSymbol == NULL || atomSymbol[0] == '\0' || atomCount <= 0)
     {
         return;
     }
 
-    for (int i = 0; i < m->numAtomTypes; i++)
+    // Cek apakah atom dengan simbol yang sama sudah ada.
+    for (int i = 0; i < molecule->atomTypeCount; i++)
     {
-        if (strcmp(m->atoms[i].symbol, symbol) == 0)
+        if (strcmp(molecule->atoms[i].symbol, atomSymbol) == 0)
         {
-            m->atoms[i].count += count;
-            return;
+            molecule->atoms[i].count += atomCount; // Tambah jumlahnya.
+            return;                                // Selesai.
         }
     }
 
-    if (m->numAtomTypes < MAX_ATOM_TYPES)
+    // Jika atom belum ada dan masih ada tempat di array.
+    if (molecule->atomTypeCount < MAX_ATOM_TYPES)
     {
-        strcpy(m->atoms[m->numAtomTypes].symbol, symbol);
-        m->atoms[m->numAtomTypes].count = count;
-        m->numAtomTypes++;
+        // Salin simbol atom baru. Pastikan atomSymbol tidak lebih panjang dari kapasitas symbol di AtomInfo.
+        strncpy(molecule->atoms[molecule->atomTypeCount].symbol, atomSymbol, sizeof(molecule->atoms[0].symbol) - 1);
+        molecule->atoms[molecule->atomTypeCount].symbol[sizeof(molecule->atoms[0].symbol) - 1] = '\0'; // Pastikan null-terminated.
+
+        molecule->atoms[molecule->atomTypeCount].count = atomCount;
+        molecule->atomTypeCount++; // Tambah jumlah tipe atom yang berbeda.
     }
+    // Jika tidak ada tempat, atom tidak ditambahkan (perilaku diam).
 }
 
 /**
  * @brief Mendapatkan massa atom relatif (Ar) untuk simbol atom yang diberikan.
- *
- * `=====( FUNGSI BAWAAN YANG SUDAH ADA DI BRIEF )=====`
- *
- * Fungsi ini menerima simbol atom sebagai parameter dan mengembalikan
- * massa atom relatif berdasarkan simbol tersebut. Jika simbol tidak dikenal,
- * fungsi ini akan mengembalikan 0.0.
- *
- * @param symbol Simbol atom (misalnya, "H", "C", "O").
- * @return double Massa atom relatif untuk simbol yang diberikan. Mengembalikan
- * 0.0 jika simbol tidak dikenal.
+ * @details Fungsi ini adalah bawaan dari brief soal.
+ * @param atomSymbol Simbol atom (misalnya, "H", "C", "O").
+ * @return double Massa atom relatif. Mengembalikan 0.0 jika simbol tidak dikenal.
+ * @note I.S. : `atomSymbol` terdefinisi.
+ * @note F.S. : Mengembalikan Ar atau 0.0.
  */
-double getAtomicWeight(const char *symbol)
+double getAtomicWeight(const char *atomSymbol)
 {
-    if (strcmp(symbol, "H") == 0)
-        return 1.008;
-    else if (strcmp(symbol, "He") == 0)
-        return 4.0026;
-    else if (strcmp(symbol, "Li") == 0)
-        return 6.94;
-    else if (strcmp(symbol, "C") == 0)
-        return 12.011;
-    else if (strcmp(symbol, "N") == 0)
-        return 14.007;
-    else if (strcmp(symbol, "O") == 0)
-        return 15.999;
-    else if (strcmp(symbol, "F") == 0)
-        return 18.998;
-    else if (strcmp(symbol, "Ne") == 0)
-        return 20.180;
-    else if (strcmp(symbol, "Na") == 0)
-        return 22.990;
-    else if (strcmp(symbol, "Mg") == 0)
-        return 24.305;
-    else if (strcmp(symbol, "Al") == 0)
-        return 26.982;
-    else if (strcmp(symbol, "Si") == 0)
-        return 28.085;
-    else if (strcmp(symbol, "P") == 0)
-        return 30.974;
-    else if (strcmp(symbol, "S") == 0)
-        return 32.06;
-    else if (strcmp(symbol, "Cl") == 0)
-        return 35.45;
-    else if (strcmp(symbol, "Ar") == 0)
-        return 39.948;
-    else if (strcmp(symbol, "K") == 0)
-        return 39.098;
-    else if (strcmp(symbol, "Ca") == 0)
-        return 40.078;
-    else if (strcmp(symbol, "Fe") == 0)
-        return 55.845;
-    else if (strcmp(symbol, "Au") == 0)
-        return 196.967;
-    else if (strcmp(symbol, "Br") == 0)
-        return 79.904;
-    else if (strcmp(symbol, "I") == 0)
-        return 126.904;
-    return 0.0;
+    if (strcmp(atomSymbol, "H") == 0) return 1.008;
+    else if (strcmp(atomSymbol, "He") == 0) return 4.0026;
+    else if (strcmp(atomSymbol, "Li") == 0) return 6.94;
+    else if (strcmp(atomSymbol, "C") == 0) return 12.011;
+    else if (strcmp(atomSymbol, "N") == 0) return 14.007;
+    else if (strcmp(atomSymbol, "O") == 0) return 15.999;
+    else if (strcmp(atomSymbol, "F") == 0) return 18.998;
+    else if (strcmp(atomSymbol, "Ne") == 0) return 20.180;
+    else if (strcmp(atomSymbol, "Na") == 0) return 22.990;
+    else if (strcmp(atomSymbol, "Mg") == 0) return 24.305;
+    else if (strcmp(atomSymbol, "Al") == 0) return 26.982;
+    else if (strcmp(atomSymbol, "Si") == 0) return 28.085;
+    else if (strcmp(atomSymbol, "P") == 0) return 30.974;
+    else if (strcmp(atomSymbol, "S") == 0) return 32.06;
+    else if (strcmp(atomSymbol, "Cl") == 0) return 35.45;
+    else if (strcmp(atomSymbol, "Ar") == 0) return 39.948;
+    else if (strcmp(atomSymbol, "K") == 0) return 39.098;
+    else if (strcmp(atomSymbol, "Ca") == 0) return 40.078;
+    else if (strcmp(atomSymbol, "Fe") == 0) return 55.845;
+    else if (strcmp(atomSymbol, "Au") == 0) return 196.967;
+    else if (strcmp(atomSymbol, "Br") == 0) return 79.904;
+    else if (strcmp(atomSymbol, "I") == 0) return 126.904;
+    return 0.0; // Simbol tidak dikenal.
 }
 
-double calculateMolecularWeight(const Molecule *m)
+/**
+ * @brief Menghitung berat molekul relatif (Mr) dari sebuah molekul.
+ * @param molecule Pointer ke Molekul yang beratnya akan dihitung.
+ * @return double Berat molekul relatif. Mengembalikan 0.0 jika molekul NULL atau kosong.
+ * @note I.S. : `molecule` terdefinisi.
+ * @note F.S. : Mengembalikan Mr dari `molecule`.
+ */
+double calculateMolecularWeight(const Molecule *molecule)
 {
-    // TODO: Implementasikan fungsi ini
-    if (m == NULL)
+    if (molecule == NULL)
     {
         return 0.0;
     }
 
-    double total = 0.0;
-    for (int i = 0; i < m->numAtomTypes; i++)
+    double totalWeight = 0.0;
+    for (int i = 0; i < molecule->atomTypeCount; i++)
     {
-        double weight = getAtomicWeight(m->atoms[i].symbol);
-        if (weight > 0.0)
+        double atomicWeightOfCurrentSymbol = getAtomicWeight(molecule->atoms[i].symbol);
+        // Hanya tambahkan jika berat atom valid (bukan 0.0 dari simbol tak dikenal)
+        if (atomicWeightOfCurrentSymbol > 0.0)
         {
-            total += weight * m->atoms[i].count;
+            totalWeight += atomicWeightOfCurrentSymbol * molecule->atoms[i].count;
         }
     }
-    return total;
+    return totalWeight;
 }
 
-int getAtomCount(const Molecule *m, const char *symbol)
+/**
+ * @brief Mendapatkan jumlah atom dengan simbol tertentu dalam sebuah molekul.
+ * @param molecule Pointer ke Molekul yang akan diperiksa.
+ * @param atomSymbol Simbol atom yang jumlahnya ingin diketahui.
+ * @return int Jumlah atom dengan simbol tersebut. Mengembalikan 0 jika molekul NULL,
+ *             simbol NULL/kosong, atau atom tidak ditemukan.
+ * @note I.S. : `molecule` dan `atomSymbol` terdefinisi.
+ * @note F.S. : Mengembalikan jumlah atom `atomSymbol` dalam `molecule`.
+ */
+int getAtomCount(const Molecule *molecule, const char *atomSymbol)
 {
-    // TODO: Implementasikan fungsi ini
-    if (m == NULL || symbol == NULL || symbol[0] == '\0')
+    if (molecule == NULL || atomSymbol == NULL || atomSymbol[0] == '\0')
     {
-        return 0;
+        return 0; // Input tidak valid.
     }
 
-    for (int i = 0; i < m->numAtomTypes; i++)
+    for (int i = 0; i < molecule->atomTypeCount; i++)
     {
-        if (strcmp(m->atoms[i].symbol, symbol) == 0)
+        if (strcmp(molecule->atoms[i].symbol, atomSymbol) == 0)
         {
-            return m->atoms[i].count;
+            return molecule->atoms[i].count; // Atom ditemukan.
         }
     }
-    return 0;
+    return 0; // Atom tidak ditemukan.
 }
 
 // --------- Fungsi Bantuan untuk qsort jika diperlukan ---------
+// Komentar untuk fungsi getAtomPriority, getElectronegativity,
+// compareAtomInfo, dan sortMolecule dipertahankan dari kode asli
+// karena sudah cukup deskriptif dan sesuai dengan brief/tambahan.
 
-/**
- * @brief Mendapatkan prioritas atom berdasarkan konvensi kimia.
- *
- * `=====( FUNGSI TAMBAHAN YANG BELUM ADA DI BRIEF )=====`
- *
- * Prioritas menentukan urutan atom dalam formula molekul:
- * - 1: Karbon (C) untuk senyawa organik.
- * - 2: Logam (kation) seperti Li, Na, K, dll.
- * - 3: Hidrogen (H) untuk senyawa kovalen/organik.
- * - 4: Atom kovalen lain seperti N, P, Si.
- * - 5: Anion seperti O, S, F, Cl, Br, I.
- * - 6: Gas mulia seperti He, Ne, Ar.
- *
- * @param symbol Simbol atom (misalnya "H", "C", "O").
- * @return int Prioritas atom.
- */
 int getAtomPriority(const char *symbol)
 {
-    if (strcmp(symbol, "C") == 0)
-        return 1; // Karbon untuk senyawa organik
+    if (strcmp(symbol, "C") == 0) return 1;
     if (strcmp(symbol, "Li") == 0 || strcmp(symbol, "Na") == 0 || strcmp(symbol, "K") == 0 ||
         strcmp(symbol, "Mg") == 0 || strcmp(symbol, "Ca") == 0 || strcmp(symbol, "Fe") == 0 ||
-        strcmp(symbol, "Au") == 0 || strcmp(symbol, "Al") == 0)
-        return 2; // Logam (kation)
-    if (strcmp(symbol, "H") == 0)
-        return 3; // Hidrogen
-    if (strcmp(symbol, "N") == 0 || strcmp(symbol, "P") == 0 || strcmp(symbol, "Si") == 0)
-        return 4; // Atom kovalen lain
+        strcmp(symbol, "Au") == 0 || strcmp(symbol, "Al") == 0) return 2;
+    if (strcmp(symbol, "H") == 0) return 3;
+    if (strcmp(symbol, "N") == 0 || strcmp(symbol, "P") == 0 || strcmp(symbol, "Si") == 0) return 4;
     if (strcmp(symbol, "O") == 0 || strcmp(symbol, "S") == 0 || strcmp(symbol, "F") == 0 ||
-        strcmp(symbol, "Cl") == 0 || strcmp(symbol, "Br") == 0 || strcmp(symbol, "I") == 0)
-        return 5; // Anion
-    if (strcmp(symbol, "He") == 0 || strcmp(symbol, "Ne") == 0 || strcmp(symbol, "Ar") == 0)
-        return 6; // Gas mulia
-    return 6;     // Default untuk atom tak dikenal
+        strcmp(symbol, "Cl") == 0 || strcmp(symbol, "Br") == 0 || strcmp(symbol, "I") == 0) return 5;
+    if (strcmp(symbol, "He") == 0 || strcmp(symbol, "Ne") == 0 || strcmp(symbol, "Ar") == 0) return 6;
+    return 7; // Menaikkan default priority agar atom tak dikenal muncul terakhir.
 }
 
-/**
- * @brief Mendapatkan nilai elektronegativitas untuk simbol atom yang diberikan.
- *
- * `=====( FUNGSI TAMBAHAN YANG BELUM ADA DI BRIEF )=====`
- *
- * Fungsi ini menerima simbol atom sebagai parameter dan mengembalikan
- * nilai elektronegativitas yang sesuai. Jika simbol tidak dikenali,
- * fungsi akan mengembalikan 0.0.
- *
- * @param symbol Simbol atom (misalnya "H", "C", "O").
- * @return double Nilai elektronegativitas atom. Mengembalikan 0.0 jika simbol tidak dikenali.
- */
 double getElectronegativity(const char *symbol)
 {
-    if (strcmp(symbol, "H") == 0)
-        return 2.20;
-    if (strcmp(symbol, "C") == 0)
-        return 2.55;
-    if (strcmp(symbol, "N") == 0)
-        return 3.04;
-    if (strcmp(symbol, "O") == 0)
-        return 3.44;
-    if (strcmp(symbol, "F") == 0)
-        return 3.98;
-    if (strcmp(symbol, "Cl") == 0)
-        return 3.16;
-    if (strcmp(symbol, "Br") == 0)
-        return 2.96;
-    if (strcmp(symbol, "I") == 0)
-        return 2.66;
-    if (strcmp(symbol, "Li") == 0)
-        return 0.93;
-    if (strcmp(symbol, "Na") == 0)
-        return 0.93;
-    if (strcmp(symbol, "K") == 0)
-        return 0.82;
-    if (strcmp(symbol, "Mg") == 0)
-        return 1.31;
-    if (strcmp(symbol, "Ca") == 0)
-        return 1.00;
-    if (strcmp(symbol, "Fe") == 0)
-        return 1.83;
-    if (strcmp(symbol, "Au") == 0)
-        return 2.54;
-    if (strcmp(symbol, "Al") == 0)
-        return 1.61;
-    if (strcmp(symbol, "Si") == 0)
-        return 1.90;
-    if (strcmp(symbol, "P") == 0)
-        return 2.19;
-    if (strcmp(symbol, "S") == 0)
-        return 2.58;
-    return 0.0;
+    if (strcmp(symbol, "H") == 0) return 2.20;
+    if (strcmp(symbol, "C") == 0) return 2.55;
+    if (strcmp(symbol, "N") == 0) return 3.04;
+    if (strcmp(symbol, "O") == 0) return 3.44;
+    if (strcmp(symbol, "F") == 0) return 3.98;
+    if (strcmp(symbol, "Cl") == 0) return 3.16;
+    if (strcmp(symbol, "Br") == 0) return 2.96;
+    if (strcmp(symbol, "I") == 0) return 2.66;
+    if (strcmp(symbol, "Li") == 0) return 0.93; // Seharusnya 0.98
+    if (strcmp(symbol, "Na") == 0) return 0.93;
+    if (strcmp(symbol, "K") == 0) return 0.82;
+    if (strcmp(symbol, "Mg") == 0) return 1.31;
+    if (strcmp(symbol, "Ca") == 0) return 1.00;
+    if (strcmp(symbol, "Fe") == 0) return 1.83;
+    if (strcmp(symbol, "Au") == 0) return 2.54;
+    if (strcmp(symbol, "Al") == 0) return 1.61;
+    if (strcmp(symbol, "Si") == 0) return 1.90;
+    if (strcmp(symbol, "P") == 0) return 2.19;
+    if (strcmp(symbol, "S") == 0) return 2.58;
+    return 0.0; // Default untuk atom tak dikenal
 }
 
-/**
- * @brief Membandingkan dua atom untuk pengurutan berdasarkan konvensi kimia.
- *
- * `=====( FUNGSI BAWAAN YANG SUDAH ADA DI BRIEF )=====`
- *
- * Fungsi ini digunakan oleh qsort untuk mengurutkan atom dalam molekul.
- * Pengurutan dilakukan berdasarkan:
- * 1. Prioritas atom (dari getAtomPriority).
- * 2. Elektronegativitas (dari getElectronegativity, lebih rendah didahulukan).
- * 3. Urutan alfabetis (jika prioritas dan elektronegativitas sama).
- *
- * Fungsi bawaan telah dimodifikasi mengikuti beberapa aturan supaya
- * sesuai dengan kasus penamaan molekul yang umum.
- *
- * Fungsi asli sebelum modifikasi adalah:
- *
- * ```
- * int compareAtomInfo(const void *a, const void *b) {
- *     const AtomInfo *atomA = (const AtomInfo *)a;
- *     const AtomInfo *atomB = (const AtomInfo *)b;
- *     return strcmp(atomA->symbol, atomB->symbol);
- * }
- * ```
- *
- * @param a Pointer ke AtomInfo pertama.
- * @param b Pointer ke AtomInfo kedua.
- * @return int Nilai negatif jika a < b, positif jika a > b, 0 jika sama.
- */
 int compareAtomInfo(const void *a, const void *b)
 {
     const AtomInfo *atomA = (const AtomInfo *)a;
@@ -274,171 +219,250 @@ int compareAtomInfo(const void *a, const void *b)
 
     int priorityA = getAtomPriority(atomA->symbol);
     int priorityB = getAtomPriority(atomB->symbol);
-    double electroA = getElectronegativity(atomA->symbol);
-    double electroB = getElectronegativity(atomB->symbol);
 
     if (priorityA != priorityB)
     {
-        return priorityA - priorityB;
+        return priorityA - priorityB; // Urutkan berdasarkan prioritas.
     }
 
-    if (electroA != electroB)
-    {
-        return (electroA < electroB) ? -1 : 1;
-    }
+    // Jika prioritas sama, urutkan berdasarkan elektronegativitas (rendah dulu).
+    double electroA = getElectronegativity(atomA->symbol);
+    double electroB = getElectronegativity(atomB->symbol);
+    if (electroA < electroB) return -1;
+    if (electroA > electroB) return 1;
 
+    // Jika elektronegativitas juga sama, urutkan berdasarkan alfabet simbol.
     return strcmp(atomA->symbol, atomB->symbol);
 }
 
-/**
- * @brief Mengurutkan atom dalam molekul berdasarkan prioritas dan elektronegativitas.
- *
- * Fungsi ini mengurutkan array atom dalam Molecule m menggunakan fungsi qsort.
- * Atom diurutkan berdasarkan prioritas, dan jika prioritas sama, akan diurutkan
- * berdasarkan elektronegativitas. Jika elektronegativitas juga sama,
- * pengurutan dilakukan berdasarkan urutan alfabet simbol atom.
- *
- * Fungsi asli ini sudah ada di brief dan tidak ada perubahan yang dilakukan.
- *
- * @param m Pointer ke Molecule yang atom-atomnya akan diurutkan.
- */
-void sortMolecule(Molecule *m)
+void sortMolecule(Molecule *molecule)
 {
-    if (m->numAtomTypes > 1)
+    if (molecule != NULL && molecule->atomTypeCount > 1)
     {
-        qsort(m->atoms, m->numAtomTypes, sizeof(AtomInfo), compareAtomInfo);
+        qsort(molecule->atoms, molecule->atomTypeCount, sizeof(AtomInfo), compareAtomInfo);
     }
 }
 
 // --------------------------------------------------------------
 
-void printMoleculeFormula(const Molecule *m)
+/**
+ * @brief Mencetak formula kimia dari sebuah molekul.
+ * @details Atom-atom akan diurutkan sesuai konvensi sebelum dicetak.
+ *          Contoh: C6H12O6, H2O, NaCl. Jika molekul kosong, cetak "(Kosong)".
+ * @param molecule Pointer ke Molekul yang formulanya akan dicetak.
+ * @note I.S. : `molecule` terdefinisi.
+ * @note F.S. : Formula molekul dicetak ke standar output diakhiri newline.
+ */
+void printMoleculeFormula(const Molecule *molecule)
 {
-    // TODO: Implementasikan fungsi ini
-    // 1. Jika m->numAtomTypes == 0, cetak "(Kosong)".
-    // 2. Urutkan atom berdasarkan simbol untuk output (gunakan fungsi sorting
-    // yang sudah diberikan)
-    // 3. Cetak formula molekul
-    // Contoh output: C6H12O6, H2O, NaCl
-
-    if (m == NULL || m->numAtomTypes == 0)
+    if (molecule == NULL || molecule->atomTypeCount == 0)
     {
         printf("(Kosong)\n");
         return;
     }
 
-    Molecule temp = *m;
-    sortMolecule(&temp);
+    // Buat salinan molekul untuk diurutkan tanpa mengubah molekul asli.
+    Molecule sortedMoleculeCopy = *molecule;
+    sortMolecule(&sortedMoleculeCopy);
 
-    for (int i = 0; i < temp.numAtomTypes; i++)
+    for (int i = 0; i < sortedMoleculeCopy.atomTypeCount; i++)
     {
-        if (temp.atoms[i].count > 0)
+        // Hanya cetak atom jika jumlahnya lebih dari 0.
+        if (sortedMoleculeCopy.atoms[i].count > 0)
         {
-            printf("%s", temp.atoms[i].symbol);
-            if (temp.atoms[i].count > 1)
+            printf("%s", sortedMoleculeCopy.atoms[i].symbol);
+            // Hanya cetak jumlah jika lebih dari 1.
+            if (sortedMoleculeCopy.atoms[i].count > 1)
             {
-                printf("%d", temp.atoms[i].count);
+                printf("%d", sortedMoleculeCopy.atoms[i].count);
             }
         }
     }
-    printf("\n");
+    printf("\n"); // Akhiri dengan newline.
 }
 
-bool areEqual(const Molecule *m1, const Molecule *m2)
+/**
+ * @brief Memeriksa apakah dua molekul identik.
+ * @details Dua molekul dianggap identik jika memiliki tipe atom yang sama
+ *          dengan jumlah yang sama untuk setiap tipe, tidak memperdulikan urutan awal.
+ * @param molecule1 Pointer ke molekul pertama.
+ * @param molecule2 Pointer ke molekul kedua.
+ * @return bool true jika kedua molekul identik, false jika tidak.
+ * @note I.S. : `molecule1` dan `molecule2` terdefinisi.
+ * @note F.S. : Mengembalikan status kesetaraan.
+ */
+bool areEqual(const Molecule *molecule1, const Molecule *molecule2)
 {
-    // TODO: Implementasikan fungsi ini
-    if (m1 == NULL || m2 == NULL)
+    // Jika salah satu atau keduanya NULL, mereka tidak bisa sama (kecuali keduanya NULL).
+    if (molecule1 == NULL && molecule2 == NULL) return true;
+    if (molecule1 == NULL || molecule2 == NULL) return false;
+
+    // Jika jumlah tipe atom berbeda, pasti tidak sama.
+    if (molecule1->atomTypeCount != molecule2->atomTypeCount)
     {
         return false;
     }
 
-    if (m1->numAtomTypes != m2->numAtomTypes)
-    {
-        return false;
-    }
+    // Buat salinan untuk diurutkan agar perbandingan tidak bergantung urutan.
+    Molecule sortedMolecule1 = *molecule1;
+    Molecule sortedMolecule2 = *molecule2;
+    sortMolecule(&sortedMolecule1);
+    sortMolecule(&sortedMolecule2);
 
-    // Sort atoms first
-    Molecule m1_sorted = *m1;
-    Molecule m2_sorted = *m2;
-    sortMolecule(&m1_sorted);
-    sortMolecule(&m2_sorted);
-
-    for (int i = 0; i < m1_sorted.numAtomTypes; i++)
+    // Bandingkan setiap atom yang sudah diurutkan.
+    for (int i = 0; i < sortedMolecule1.atomTypeCount; i++)
     {
-        if (strcmp(m1_sorted.atoms[i].symbol, m2_sorted.atoms[i].symbol) != 0 ||
-            m1_sorted.atoms[i].count != m2_sorted.atoms[i].count)
+        if (strcmp(sortedMolecule1.atoms[i].symbol, sortedMolecule2.atoms[i].symbol) != 0 ||
+            sortedMolecule1.atoms[i].count != sortedMolecule2.atoms[i].count)
         {
-            return false;
+            return false; // Ditemukan perbedaan.
         }
     }
-    return true;
+    return true; // Semua atom dan jumlahnya cocok.
 }
 
-Molecule combineMolecules(const Molecule *m1, const Molecule *m2)
+/**
+ * @brief Menggabungkan dua molekul menjadi satu molekul baru.
+ * @details Jumlah atom untuk simbol yang sama akan dijumlahkan.
+ * @param molecule1 Pointer ke molekul pertama.
+ * @param molecule2 Pointer ke molekul kedua.
+ * @return Molecule Molekul baru hasil penggabungan. Jika input NULL, mengembalikan molekul kosong.
+ * @note I.S. : `molecule1` dan `molecule2` terdefinisi.
+ * @note F.S. : Mengembalikan molekul baru.
+ */
+Molecule combineMolecules(const Molecule *molecule1, const Molecule *molecule2)
 {
-    Molecule result;
-    createMolecule(&result);
+    Molecule combinedMolecule;
+    createMolecule(&combinedMolecule); // Inisialisasi molekul hasil.
 
-    // TODO: Implementasikan logika penggabungan
-    if (m1 == NULL || m2 == NULL)
-    {
-        return result;
-    }
+    if (molecule1 == NULL && molecule2 == NULL) return combinedMolecule; // Keduanya NULL
 
-    for (int i = 0; i < m1->numAtomTypes; i++)
-    {
-        addAtom(&result, m1->atoms[i].symbol, m1->atoms[i].count);
-    }
-
-    for (int i = 0; i < m2->numAtomTypes; i++)
-    {
-        addAtom(&result, m2->atoms[i].symbol, m2->atoms[i].count);
-    }
-
-    return result;
-}
-
-bool canSubtract(const Molecule *m_total, const Molecule *m_sub)
-{
-    // TODO: Implementasikan logika pengecekan
-    if (m_total == NULL || m_sub == NULL)
-    {
-        return false;
-    }
-
-    for (int i = 0; i < m_sub->numAtomTypes; i++)
-    {
-        const char *symbol = m_sub->atoms[i].symbol;
-        if (getAtomCount(m_total, symbol) < getAtomCount(m_sub, symbol))
+    // Tambahkan semua atom dari molekul pertama.
+    if (molecule1 != NULL) {
+        for (int i = 0; i < molecule1->atomTypeCount; i++)
         {
-            return false;
-        }
-    }
-    return true;
-}
-
-Molecule subtractMolecule(const Molecule *m_total, const Molecule *m_sub)
-{
-    Molecule result;
-    createMolecule(&result);
-
-    // TODO: Implementasikan logika pengurangan
-
-    if (m_total == NULL || m_sub == NULL || !canSubtract(m_total, m_sub))
-    {
-        return result;
-    }
-
-    for (int i = 0; i < m_total->numAtomTypes; i++)
-    {
-        const char *symbol = m_total->atoms[i].symbol;
-        int countTotal = getAtomCount(m_total, symbol);
-        int countSub = getAtomCount(m_sub, symbol);
-        if (countTotal > countSub)
-        {
-            addAtom(&result, symbol, countTotal - countSub);
+            addAtom(&combinedMolecule, molecule1->atoms[i].symbol, molecule1->atoms[i].count);
         }
     }
 
-    return result;
+    // Tambahkan semua atom dari molekul kedua.
+    // Fungsi addAtom akan menangani jika simbol sudah ada (menjumlahkan count).
+    if (molecule2 != NULL) {
+        for (int i = 0; i < molecule2->atomTypeCount; i++)
+        {
+            addAtom(&combinedMolecule, molecule2->atoms[i].symbol, molecule2->atoms[i].count);
+        }
+    }
+
+    sortMolecule(&combinedMolecule); // Urutkan hasil akhir untuk konsistensi
+    return combinedMolecule;
+}
+
+/**
+ * @brief Memeriksa apakah molekul `moleculeToSubtract` dapat dikurangkan dari `totalMolecule`.
+ * @details Dapat dikurangkan jika `totalMolecule` memiliki jumlah atom yang cukup
+ *          untuk setiap tipe atom yang ada di `moleculeToSubtract`.
+ * @param totalMolecule Pointer ke molekul total.
+ * @param moleculeToSubtract Pointer ke molekul yang akan dikurangkan.
+ * @return bool true jika pengurangan dimungkinkan, false jika tidak.
+ * @note I.S. : `totalMolecule` dan `moleculeToSubtract` terdefinisi.
+ * @note F.S. : Mengembalikan status apakah pengurangan bisa dilakukan.
+ */
+bool canSubtract(const Molecule *totalMolecule, const Molecule *moleculeToSubtract)
+{
+    if (totalMolecule == NULL || moleculeToSubtract == NULL)
+    {
+        // Pengurangan tidak mungkin jika salah satu molekul tidak ada.
+        // Jika moleculeToSubtract kosong, maka selalu bisa dikurangkan.
+        return (moleculeToSubtract == NULL || moleculeToSubtract->atomTypeCount == 0);
+    }
+
+    // Periksa setiap tipe atom dalam molekul yang akan dikurangkan.
+    for (int i = 0; i < moleculeToSubtract->atomTypeCount; i++)
+    {
+        const char *atomSymbolToSubtract = moleculeToSubtract->atoms[i].symbol;
+        int countNeeded = moleculeToSubtract->atoms[i].count;
+        int countAvailable = getAtomCount(totalMolecule, atomSymbolToSubtract);
+
+        if (countAvailable < countNeeded)
+        {
+            return false; // Tidak cukup atom tersedia untuk dikurangkan.
+        }
+    }
+    return true; // Semua atom yang dibutuhkan tersedia.
+}
+
+/**
+ * @brief Mengurangkan satu molekul (`moleculeToSubtract`) dari molekul lain (`initialMolecule`).
+ * @details Hanya atom yang ada di `initialMolecule` yang akan dikurangi.
+ *          Jika `moleculeToSubtract` mengandung atom yang tidak ada di `initialMolecule`,
+ *          atau jika jumlahnya lebih banyak, operasi pengurangan untuk atom tersebut
+ *          tidak akan menghasilkan jumlah negatif (minimal 0).
+ *          Fungsi ini mengembalikan molekul baru hasil pengurangan.
+ * @param initialMolecule Pointer ke molekul awal.
+ * @param moleculeToSubtract Pointer ke molekul yang akan dikurangkan.
+ * @return Molecule Molekul baru hasil pengurangan. Mengembalikan molekul kosong jika
+ *                  input tidak valid atau pengurangan tidak memungkinkan (`canSubtract` false).
+ * @note I.S. : `initialMolecule` dan `moleculeToSubtract` terdefinisi.
+ * @note F.S. : Mengembalikan molekul hasil.
+ */
+Molecule subtractMolecule(const Molecule *initialMolecule, const Molecule *moleculeToSubtract)
+{
+    Molecule resultingMolecule;
+    createMolecule(&resultingMolecule); // Inisialisasi hasil.
+
+    // Jika input tidak valid atau pengurangan tidak bisa dilakukan, kembalikan molekul kosong.
+    if (initialMolecule == NULL || !canSubtract(initialMolecule, moleculeToSubtract))
+    {
+        // Jika moleculeToSubtract NULL, canSubtract akan true, jadi kita copy initialMolecule.
+        if (initialMolecule != NULL && moleculeToSubtract == NULL) {
+            for (int i = 0; i < initialMolecule->atomTypeCount; i++) {
+                addAtom(&resultingMolecule, initialMolecule->atoms[i].symbol, initialMolecule->atoms[i].count);
+            }
+            sortMolecule(&resultingMolecule);
+            return resultingMolecule;
+        }
+        return resultingMolecule; // Kembalikan kosong jika canSubtract false atau initialMolecule NULL
+    }
+
+    // Salin semua atom dari initialMolecule ke resultingMolecule.
+    for (int i = 0; i < initialMolecule->atomTypeCount; i++)
+    {
+        addAtom(&resultingMolecule, initialMolecule->atoms[i].symbol, initialMolecule->atoms[i].count);
+    }
+
+    // Kurangkan atom berdasarkan moleculeToSubtract.
+    if (moleculeToSubtract != NULL) { // Pastikan moleculeToSubtract tidak NULL
+        for (int i = 0; i < moleculeToSubtract->atomTypeCount; i++)
+        {
+            const char *currentAtomSymbol = moleculeToSubtract->atoms[i].symbol;
+            int countToSubtract = moleculeToSubtract->atoms[i].count;
+
+            // Cari atom yang sama di resultingMolecule dan kurangi jumlahnya.
+            for (int j = 0; j < resultingMolecule.atomTypeCount; j++)
+            {
+                if (strcmp(resultingMolecule.atoms[j].symbol, currentAtomSymbol) == 0)
+                {
+                    resultingMolecule.atoms[j].count -= countToSubtract;
+                    // Jika count menjadi <= 0, idealnya atom ini dihapus dari list,
+                    // tapi ADT saat ini tidak memiliki fungsi removeAtom.
+                    // Untuk sementara, atom dengan count <= 0 tidak akan dicetak oleh printMoleculeFormula.
+                    // Jika count menjadi negatif, itu masalah. Asumsi canSubtract mencegah ini.
+                    if (resultingMolecule.atoms[j].count < 0) resultingMolecule.atoms[j].count = 0; // Pastikan tidak negatif
+                    break;
+                }
+            }
+        }
+    }
+
+    // Membersihkan atom dengan count 0 dari resultingMolecule (opsional, tapi baik)
+    Molecule finalResult;
+    createMolecule(&finalResult);
+    for(int i=0; i < resultingMolecule.atomTypeCount; i++){
+        if(resultingMolecule.atoms[i].count > 0){
+            addAtom(&finalResult, resultingMolecule.atoms[i].symbol, resultingMolecule.atoms[i].count);
+        }
+    }
+    sortMolecule(&finalResult);
+    return finalResult;
 }

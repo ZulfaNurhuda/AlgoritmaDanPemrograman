@@ -1,50 +1,85 @@
+/**
+ * --------------------------------------------------------------
+ * | @file MisiKebin.c                                          |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Program untuk menghitung jumlah bilangan prima dalam       |
+ * | sebuah rentang [A, B] inklusif.                            |
+ * --------------------------------------------------------------
+ */
+
 #include <stdio.h>
+#include <stdbool.h> // Untuk menggunakan tipe data bool secara eksplisit jika diinginkan
 
-// TODO: Perbaiki prosedur agar variabel total bisa diperbarui secara langsung
-void countPrime(int A, int B, int *total)
+/**
+ * @brief Menghitung jumlah bilangan prima dalam rentang [rangeStart, rangeEnd].
+ * @details Sebuah bilangan dianggap prima jika lebih besar dari 1 dan hanya habis
+ *          dibagi oleh 1 dan dirinya sendiri.
+ * @param rangeStart Batas bawah rentang (inklusif).
+ * @param rangeEnd Batas atas rentang (inklusif).
+ * @param[out] totalPrimes Pointer ke integer yang akan menyimpan jumlah total bilangan prima yang ditemukan.
+ *                         Nilai yang ditunjuk oleh pointer ini akan diincrement setiap kali bilangan prima ditemukan.
+ * @note I.S. : rangeStart, rangeEnd terdefinisi. totalPrimes adalah pointer valid ke integer yang sudah diinisialisasi (misal, ke 0).
+ * @note F.S. : Integer yang ditunjuk oleh totalPrimes berisi jumlah bilangan prima dalam rentang [rangeStart, rangeEnd].
+ */
+void countPrimesInRange(int rangeStart, int rangeEnd, int *totalPrimes)
 {
-    // TODO: Implementasi prosedur untuk menghitung jumlah bilangan prima dalam rentang [A, B]
-    // Saat ini, total tidak bisa diperbarui karena hanya merupakan salinan dari nilai di main()
-
-    for (int i = A; i <= B; i++)
+    // Loop melalui setiap angka dalam rentang yang diberikan.
+    for (int number = rangeStart; number <= rangeEnd; number++)
     {
-        int isPrime = 1;
-        if (i <= 1)
+        bool isCurrentlyPrime = true; // Asumsikan angka saat ini prima.
+
+        // Bilangan prima harus lebih besar dari 1.
+        if (number <= 1)
         {
-            isPrime = 0;
+            isCurrentlyPrime = false;
         }
         else
         {
-            for (int j = 2; j * j <= i; j++)
+            // Cek pembagi dari 2 hingga akar kuadrat dari angka tersebut.
+            // Jika ditemukan pembagi, angka tersebut bukan prima.
+            for (int divisor = 2; divisor * divisor <= number; divisor++)
             {
-                if (i % j == 0)
+                if (number % divisor == 0)
                 {
-                    isPrime = 0;
-                    break;
+                    isCurrentlyPrime = false;
+                    break; // Tidak perlu cek pembagi lain.
                 }
             }
         }
         
-        if (isPrime)
+        // Jika angka tersebut terkonfirmasi prima, increment total.
+        if (isCurrentlyPrime)
         {
-            (*total)++; // Perbarui nilai total melalui pointer
+            (*totalPrimes)++; // Perbarui nilai total melalui pointer.
         }
     }
 }
 
-int main()
+/**
+ * @brief Fungsi utama program.
+ * @details Membaca dua bilangan integer A dan B sebagai batas rentang,
+ *          kemudian menghitung dan mencetak jumlah bilangan prima
+ *          dalam rentang [A, B].
+ * @return int Mengembalikan 0 jika program berjalan sukses.
+ */
+int main(void)
 {
-    int A, B, total = 0;
+    // Mendeklarasikan variabel untuk batas bawah dan atas rentang.
+    int rangeStartA, rangeEndB;
+    // Variabel untuk menyimpan total bilangan prima, diinisialisasi ke 0.
+    int primeCount = 0;
 
-    // TODO: Baca dua bilangan integer A dan B dalam satu baris
-    // Input harus dalam format: "A B"
-    scanf("%d %d", &A, &B);
+    // Membaca dua bilangan integer A (rangeStartA) dan B (rangeEndB) dari satu baris input.
+    scanf("%d %d", &rangeStartA, &rangeEndB);
 
-    // TODO: Perbaiki pemanggilan prosedur dengan menggunakan alamat variabel total
-    // Agar perubahan nilai di dalam prosedur juga mempengaruhi nilai di main()
-    countPrime(A, B, &total);
+    // Memanggil prosedur untuk menghitung bilangan prima dalam rentang yang diberikan.
+    // Alamat dari primeCount (&primeCount) dilewatkan agar nilainya dapat diubah oleh fungsi.
+    countPrimesInRange(rangeStartA, rangeEndB, &primeCount);
 
-    printf("%d\n", total);
+    // Mencetak total bilangan prima yang ditemukan.
+    printf("%d\n", primeCount);
 
+    // Mengindikasikan bahwa program berakhir dengan sukses.
     return 0;
 }

@@ -1,133 +1,166 @@
-#include "molecule.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+/**
+ * --------------------------------------------------------------
+ * | @file moleculeDriver.c                                     |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Program driver interaktif untuk mengelola kumpulan molekul.|
+ * | Pengguna dapat melakukan berbagai operasi pada molekul     |
+ * | melalui perintah teks.                                     |
+ * --------------------------------------------------------------
+ */
+
+#include "molecule.h" // Header ADT Molecule
+#include <stdio.h>    // Untuk scanf, printf
+#include <stdlib.h>   // Untuk exit (jika diperlukan untuk error handling VLA)
+#include <string.h>   // Untuk strcmp
 
 /**
- * @brief Main function to interactively manage a collection of molecules.
+ * @brief Fungsi utama untuk program driver interaktif ADT Molekul.
+ * @details
+ * Program ini pertama-tama meminta jumlah molekul yang akan dikelola.
+ * Kemudian, program masuk ke dalam loop untuk menerima dan memproses perintah dari pengguna.
+ * Perintah yang didukung meliputi:
+ * - `ADD <idx> <simbol> <jumlah>`: Menambahkan atom ke molekul pada indeks `idx`.
+ * - `PRINT <idx>`: Mencetak formula molekul pada indeks `idx`.
+ * - `WEIGHT <idx>`: Menghitung dan mencetak berat molekul pada indeks `idx`.
+ * - `GET_COUNT <idx> <simbol>`: Mendapatkan jumlah atom `simbol` pada molekul `idx`.
+ * - `ARE_EQUAL <idx1> <idx2>`: Memeriksa apakah molekul pada `idx1` dan `idx2` sama.
+ * - `COMBINE <idx_hasil> <idx1> <idx2>`: Menggabungkan molekul `idx1` dan `idx2`, hasil di `idx_hasil`.
+ * - `CAN_SUBTRACT <idx_total> <idx_kurang>`: Memeriksa apakah molekul `idx_kurang` bisa dikurangkan dari `idx_total`.
+ * - `SUBTRACT <idx_hasil> <idx_total> <idx_kurang>`: Mengurangkan molekul `idx_kurang` dari `idx_total`, hasil di `idx_hasil`.
+ * - `END`: Mengakhiri program.
  *
- * This function initializes an array of Molecule objects based on user input.
- * It then enters a loop to process various commands that allow the user
- * to perform operations on the molecules such as adding atoms, printing
- * molecular formulas, calculating molecular weight, checking equality,
- * combining molecules, and subtracting molecules. The loop continues until
- * the "END" command is received.
+ * @note Catatan dari pengembang asli:
+ *       "I don't know where vulnerability is in this code.
+ *        If you run this code in olympia vitual machine, you may get only 10/100 point.
+ *        But if you run this code in your local machine, anything looks fine.
+ *        Sorry for the inconvenience. Hehe :)"
+ *       (Catatan ini dipertahankan untuk konteks.)
  *
- * Commands:
- *
- * - `ADD`: Add atoms to a specified molecule.
- *
- * - `PRINT`: Print the formula of a specified molecule.
- *
- * - `WEIGHT`: Calculate and print the molecular weight of a specified molecule.
- *
- * - `GET_COUNT`: Get the count of a specific atom in a specified molecule.
- *
- * - `ARE_EQUAL`: Check if two molecules are equal.
- *
- * - `COMBINE`: Combine two molecules and store the result in a specified molecule.
- *
- * - `CAN_SUBTRACT`: Check if one molecule can be subtracted from another.
- *
- * - `SUBTRACT`: Subtract one molecule from another and store the result.
- *
- * Note:
- * I don't know where vulnerability is in this code.
- * If you run this code in olympia vitual machine, you may get only 10/100 point.
- * But if you run this code in your local machine, anything looks fine.
- * Sorry for the inconvenience. Hehe :)"
- *
- * @return int Exit status of the program.
+ * @return int Status keluar program (0 untuk sukses).
  */
 int main(void)
 {
-    int n;
-    scanf("%d", &n);
+    int numberOfMolecules; // Jumlah total molekul yang akan dikelola
+    // Membaca jumlah molekul dari pengguna.
+    scanf("%d", &numberOfMolecules);
 
-    Molecule molecules[n];
-    for (int i = 0; i < n; ++i)
+    // Membuat array molekul. Menggunakan VLA (Variable Length Array) C99.
+    // Perlu diperhatikan bahwa VLA mungkin tidak didukung oleh semua kompiler C (misal, MSVC).
+    // Alternatifnya adalah alokasi dinamis.
+    if (numberOfMolecules <= 0) {
+        // Jika input tidak valid atau 0, bisa langsung keluar atau beri pesan.
+        // printf("Jumlah molekul harus positif.\n");
+        return 0; // Sesuai perilaku umum jika N=0, tidak ada yang diproses.
+    }
+    Molecule moleculesArray[numberOfMolecules];
+
+    // Menginisialisasi setiap molekul dalam array menjadi kosong.
+    for (int i = 0; i < numberOfMolecules; ++i)
     {
-        createMolecule(&molecules[i]);
+        createMolecule(&moleculesArray[i]);
     }
 
-    char command[30];
-    int idx1, idx2, idx_res, count;
-    char symbol[MAX_SYMBOL_LEN];
+    char command[30];             // Buffer untuk menyimpan perintah input.
+    int moleculeIndex1, moleculeIndex2, resultMoleculeIndex; // Indeks untuk operasi molekul.
+    int atomCountInput;           // Jumlah atom untuk perintah ADD.
+    char atomSymbolInput[MAX_SYMBOL_LEN]; // Simbol atom untuk perintah ADD dan GET_COUNT.
 
-    // TODO: Lengkapi main function
+    // Loop utama untuk membaca dan memproses perintah.
     do
     {
-        scanf("%s", command);
+        scanf("%s", command); // Membaca string perintah.
+
+        // Perintah "END": Keluar dari loop dan mengakhiri program.
         if (strcmp(command, "END") == 0)
         {
             break;
         }
 
+        // Perintah "ADD": Menambahkan atom ke molekul.
         if (strcmp(command, "ADD") == 0)
         {
-            scanf("%d %s %d", &idx1, symbol, &count);
-            if (idx1 >= 0 && idx1 < n && count > 0)
+            scanf("%d %s %d", &moleculeIndex1, atomSymbolInput, &atomCountInput);
+            // Validasi indeks dan jumlah atom sebelum memanggil fungsi.
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules && atomCountInput > 0)
             {
-                addAtom(&molecules[idx1], symbol, count);
+                addAtom(&moleculesArray[moleculeIndex1], atomSymbolInput, atomCountInput);
             }
         }
+        // Perintah "PRINT": Mencetak formula molekul.
         else if (strcmp(command, "PRINT") == 0)
         {
-            scanf("%d", &idx1);
-            if (idx1 >= 0 && idx1 < n)
+            scanf("%d", &moleculeIndex1);
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules)
             {
-                printMoleculeFormula(&molecules[idx1]);
+                printMoleculeFormula(&moleculesArray[moleculeIndex1]);
             }
         }
+        // Perintah "WEIGHT": Menghitung dan mencetak berat molekul.
         else if (strcmp(command, "WEIGHT") == 0)
         {
-            scanf("%d", &idx1);
-            if (idx1 >= 0 && idx1 < n)
+            scanf("%d", &moleculeIndex1);
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules)
             {
-                printf("%.3f\n", calculateMolecularWeight(&molecules[idx1]));
+                printf("%.3f\n", calculateMolecularWeight(&moleculesArray[moleculeIndex1]));
             }
         }
+        // Perintah "GET_COUNT": Mendapatkan jumlah atom tertentu.
         else if (strcmp(command, "GET_COUNT") == 0)
         {
-            scanf("%d %s", &idx1, symbol);
-            if (idx1 >= 0 && idx1 < n)
+            scanf("%d %s", &moleculeIndex1, atomSymbolInput);
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules)
             {
-                printf("%d\n", getAtomCount(&molecules[idx1], symbol));
+                printf("%d\n", getAtomCount(&moleculesArray[moleculeIndex1], atomSymbolInput));
             }
         }
+        // Perintah "ARE_EQUAL": Memeriksa kesetaraan dua molekul.
         else if (strcmp(command, "ARE_EQUAL") == 0)
         {
-            scanf("%d %d", &idx1, &idx2);
-            if (idx1 >= 0 && idx1 < n && idx2 >= 0 && idx2 < n)
+            scanf("%d %d", &moleculeIndex1, &moleculeIndex2);
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules &&
+                moleculeIndex2 >= 0 && moleculeIndex2 < numberOfMolecules)
             {
-                printf("%s\n", areEqual(&molecules[idx1], &molecules[idx2]) ? "YES" : "NO");
+                printf("%s\n", areEqual(&moleculesArray[moleculeIndex1], &moleculesArray[moleculeIndex2]) ? "YES" : "NO");
             }
         }
+        // Perintah "COMBINE": Menggabungkan dua molekul.
         else if (strcmp(command, "COMBINE") == 0)
         {
-            scanf("%d %d %d", &idx_res, &idx1, &idx2);
-            if (idx_res >= 0 && idx_res < n && idx1 >= 0 && idx1 < n && idx2 >= 0 && idx2 < n)
+            scanf("%d %d %d", &resultMoleculeIndex, &moleculeIndex1, &moleculeIndex2);
+            if (resultMoleculeIndex >= 0 && resultMoleculeIndex < numberOfMolecules &&
+                moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules &&
+                moleculeIndex2 >= 0 && moleculeIndex2 < numberOfMolecules)
             {
-                molecules[idx_res] = combineMolecules(&molecules[idx1], &molecules[idx2]);
+                moleculesArray[resultMoleculeIndex] = combineMolecules(&moleculesArray[moleculeIndex1], &moleculesArray[moleculeIndex2]);
             }
         }
+        // Perintah "CAN_SUBTRACT": Memeriksa apakah pengurangan molekul dimungkinkan.
         else if (strcmp(command, "CAN_SUBTRACT") == 0)
         {
-            scanf("%d %d", &idx1, &idx2);
-            if (idx1 >= 0 && idx1 < n && idx2 >= 0 && idx2 < n)
+            scanf("%d %d", &moleculeIndex1, &moleculeIndex2); // idx1 = total, idx2 = sub
+            if (moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules &&
+                moleculeIndex2 >= 0 && moleculeIndex2 < numberOfMolecules)
             {
-                printf("%s\n", canSubtract(&molecules[idx1], &molecules[idx2]) ? "YES" : "NO");
+                printf("%s\n", canSubtract(&moleculesArray[moleculeIndex1], &moleculesArray[moleculeIndex2]) ? "YES" : "NO");
             }
         }
+        // Perintah "SUBTRACT": Mengurangkan satu molekul dari yang lain.
         else if (strcmp(command, "SUBTRACT") == 0)
         {
-            scanf("%d %d %d", &idx_res, &idx1, &idx2);
-            if (idx_res >= 0 && idx_res < n && idx1 >= 0 && idx1 < n && idx2 >= 0 && idx2 < n)
+            scanf("%d %d %d", &resultMoleculeIndex, &moleculeIndex1, &moleculeIndex2); // idx_res, idx1=total, idx2=sub
+            if (resultMoleculeIndex >= 0 && resultMoleculeIndex < numberOfMolecules &&
+                moleculeIndex1 >= 0 && moleculeIndex1 < numberOfMolecules &&
+                moleculeIndex2 >= 0 && moleculeIndex2 < numberOfMolecules)
             {
-                molecules[idx_res] = subtractMolecule(&molecules[idx1], &molecules[idx2]);
+                moleculesArray[resultMoleculeIndex] = subtractMolecule(&moleculesArray[moleculeIndex1], &moleculesArray[moleculeIndex2]);
             }
         }
-    } while (1);
+        // Jika perintah tidak dikenal, loop akan berlanjut meminta perintah baru.
+        // Bisa ditambahkan penanganan untuk perintah tidak valid jika diinginkan.
 
+    } while (true); // Loop tak terbatas, dihentikan oleh "END" command.
+
+    // Mengindikasikan bahwa program berakhir dengan sukses.
     return 0;
 }

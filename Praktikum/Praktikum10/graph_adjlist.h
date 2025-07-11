@@ -1,66 +1,98 @@
+/**
+ * --------------------------------------------------------------
+ * | @file graph_adjlist.h                                      |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Definisi ADT Graph menggunakan representasi Adjacency List.|
+ * | Graph ini tidak berarah dan tidak berbobot.                |
+ * --------------------------------------------------------------
+ */
+
 #ifndef GRAPH_ADJLIST_H
 #define GRAPH_ADJLIST_H
 
-#include <stdbool.h>
+#include <stdbool.h> // Untuk tipe data bool
+#include <stdlib.h>  // Untuk NULL (meskipun seringkali sudah ter-include dari stdio.h atau stdbool.h)
 
+/* ***************************************************** */
+/* ********************** TIPE DATA ******************** */
+/* ***************************************************** */
+
+/**
+ * @struct Node
+ * @brief Struktur untuk merepresentasikan sebuah node dalam adjacency list.
+ * @details Setiap node menyimpan nomor vertex yang bertetangga dan pointer
+ *          ke node berikutnya dalam list untuk vertex yang sama.
+ */
 typedef struct Node
 {
-    int vertex; /**< Nilai vertex. */
-    struct Node *next; /**< Pointer ke simpul berikutnya dalam adjacency list. */
+    int vertex;        /**< Nomor vertex yang bertetangga. */
+    struct Node *next; /**< Pointer ke node tetangga berikutnya dalam list. */
 } Node;
 
-typedef struct
+/**
+ * @struct Graph
+ * @brief Struktur untuk merepresentasikan graph menggunakan adjacency list.
+ * @details Graph terdiri dari jumlah vertex dan sebuah array pointer ke Node.
+ *          Setiap elemen `adjList[i]` adalah pointer ke head dari linked list
+ *          yang berisi semua vertex yang bertetangga dengan vertex `i`.
+ */
+typedef struct Graph // Memberikan nama pada struct untuk kejelasan
 {
-    int numVertices; /**< Banyak simpul (vertex) dalam graf. */
-    Node **adjList;  /**< Array pointer ke daftar adjacency. */
+    int numVertices; /**< Jumlah total simpul (vertex) dalam graph. */
+    Node **adjList;  /**< Array pointer ke head dari adjacency list untuk setiap vertex. */
 } Graph;
 
-/**
- * @brief Membuat simpul baru untuk daftar adjacency.
- *
- * @param v Nomor vertex untuk simpul baru.
- * @return Pointer ke simpul yang baru dibuat atau NULL jika alokasi gagal;
- */
-Node *createNode(int v);
+/* ***************************************************** */
+/* ******************** KONSTRUKTOR ******************** */
+/* ***************************************************** */
 
 /**
- * @brief Membuat graf dengan jumlah simpul tertentu.
- *
- * @param numVertices Jumlah simpul dalam graf. Vertex yang valid adalah 0
- * sampai numVertices-1.
- * @return Pointer ke graf yang baru dibuat atau NULL jika alokasi graph atau
- * simpul gagal.
+ * @brief Membuat sebuah node baru untuk digunakan dalam adjacency list.
+ * @details Node ini akan menyimpan nomor vertex tujuan dan pointer ke node berikutnya.
+ * @param vertexValue Nilai (nomor) vertex yang akan disimpan di dalam node.
+ * @return Node* Pointer ke Node yang baru dibuat, atau NULL jika alokasi memori gagal.
  */
-Graph *createGraph(int numVertices);
+Node *createNode(int vertexValue);
 
 /**
- * @brief Menambahkan sisi (edge) antara dua simpul dalam graf.
- *
- * Vertex yang valid adalah 0 sampai numVertices-1. Jika vertex di luar range
- * tersebut, penambahan edge akan gagal.
- *
- * Vertex baru selalu ditambahkan di akhir adjacency list. Contoh:
- * - Jika addEdge(graph, 0, 1) dipanggil, adjacency list untuk vertex 0 akan
- * berisi [1]
- * - Jika addEdge(graph, 0, 2) dipanggil, adjacency list untuk vertex 0 akan
- * berisi [1, 2]
- * - Jika addEdge(graph, 0, 3) dipanggil, adjacency list untuk vertex 0 akan
- * berisi [1, 2, 3]
- *
- * Jika penambahan gagal: keluarkan output: "Penambahan edge
- * gagal.\n"
- *
- * @param graph Pointer ke graf.
- * @param v1 Simpul pertama (harus dalam range 0 sampai numVertices-1).
- * @param v2 Simpul kedua (harus dalam range 0 sampai numVertices-1).
+ * @brief Membuat sebuah graph baru dengan jumlah vertex tertentu.
+ * @details Graph direpresentasikan sebagai array dari adjacency list.
+ *          Setiap elemen array adalah pointer ke head dari linked list.
+ * @param numberOfVertices Jumlah total vertex yang akan ada dalam graph.
+ *                         Vertex yang valid akan memiliki nomor dari 0 hingga numberOfVertices-1.
+ * @return Graph* Pointer ke Graph yang baru dibuat, atau NULL jika alokasi memori gagal.
  */
-void addEdge(Graph *graph, int v1, int v2);
+Graph *createGraph(int numberOfVertices);
+
+/* ***************************************************** */
+/* ******************* OPERASI GRAPH ******************* */
+/* ***************************************************** */
 
 /**
- * @brief Membebaskan memori yang dialokasikan untuk graf.
- *
- * @param graph Pointer ke graf yang akan dibebaskan.
+ * @brief Menambahkan sebuah sisi (edge) tak berarah antara dua simpul dalam graph.
+ * @details Karena graph tak berarah, sisi akan ditambahkan ke adjacency list
+ *          dari kedua simpul. Sisi baru selalu ditambahkan di akhir list.
+ *          Jika vertex yang diberikan di luar rentang yang valid (0 sampai numVertices-1),
+ *          atau jika alokasi node gagal, fungsi akan mencetak "Penambahan edge gagal.\n".
+ * @param graph Pointer ke Graph yang akan dimodifikasi.
+ * @param vertex1 Nomor simpul pertama dari sisi.
+ * @param vertex2 Nomor simpul kedua dari sisi.
+ */
+void addEdge(Graph *graph, int vertex1, int vertex2);
+
+/* ***************************************************** */
+/* ******************** DESTRUKTOR ********************* */
+/* ***************************************************** */
+
+/**
+ * @brief Membebaskan semua memori yang dialokasikan untuk graph.
+ * @details Fungsi ini akan mengiterasi melalui setiap adjacency list, membebaskan
+ *          semua node di dalamnya, kemudian membebaskan array adjacency list,
+ *          dan terakhir membebaskan struktur Graph itu sendiri.
+ * @param graph Pointer ke Graph yang akan dibebaskan memorinya.
+ *              Jika graph adalah NULL, fungsi tidak melakukan apa-apa.
  */
 void freeGraph(Graph *graph);
 
-#endif
+#endif // GRAPH_ADJLIST_H

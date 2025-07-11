@@ -1,81 +1,115 @@
+/**
+ * --------------------------------------------------------------
+ * | @file NimonsAttack.h                                       |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Header file untuk ADT dan fungsi terkait simulasi serangan |
+ * | Nimons. Mendefinisikan struktur data untuk Koordinat dan   |
+ * | Kapal, serta prototipe fungsi untuk operasi terkait.       |
+ * --------------------------------------------------------------
+ */
+
 #ifndef NIMONSATTACK_H
 #define NIMONSATTACK_H
 
-#define _INF 1000000000
+// #define _INF 1000000000 // Konstanta tidak digunakan dalam fungsi yang dideklarasikan di sini.
+                         // Jika akan digunakan, pastikan relevansinya jelas.
 
-#include "Boolean.h"
-#include <math.h>
-#include <stdio.h>
-#include <string.h>
+#include "Boolean.h" // Untuk tipe data boolean (TRUE/FALSE)
+// Tidak perlu include <math.h>, <stdio.h>, <string.h> di header jika hanya untuk deklarasi fungsi
+// yang parameternya tidak menggunakan tipe dari library tersebut secara langsung (misal FILE*).
+// Cukup di .c file.
 
-typedef struct
+/* ***************************************************** */
+/* ********************** TIPE DATA ******************** */
+/* ***************************************************** */
+
+/**
+ * @struct Koordinat
+ * @brief Merepresentasikan sebuah titik koordinat (x, y) dalam sistem kartesius 2D.
+ */
+typedef struct Koordinat // Memberikan nama pada struct untuk kejelasan
 {
-    int x;
-    int y;
+    int x; /**< Komponen absis (x) dari koordinat. */
+    int y; /**< Komponen ordinat (y) dari koordinat. */
 } Koordinat;
 
-typedef struct
+/**
+ * @struct Kapal
+ * @brief Merepresentasikan sebuah kapal dengan posisi dan kode identifikasi.
+ */
+typedef struct Kapal // Memberikan nama pada struct untuk kejelasan
 {
-    Koordinat posisi;
-    char kode[3];
+    Koordinat posisi; /**< Posisi kapal saat ini, direpresentasikan oleh struct Koordinat. */
+    char kode[3];     /**< Kode identifikasi unik untuk kapal (maksimal 2 karakter + null terminator). */
 } Kapal;
 
-/**
- * Menghitung jarak langsung antara kapal ke pulau.
- *
- * @param kapal Kapal yang akan dihitung jaraknya.
- * @param pulau Koordinat pulau yang menjadi acuan.
- *
- * @return Jarak antara kapal dan pulau
- */
-float hitungJarakKePulau(Kapal kapal, Koordinat pulau);
+/* ***************************************************** */
+/* ******************* PROTOTIPE FUNGSI **************** */
+/* ***************************************************** */
 
 /**
- * Menghitung jarak langsung antara dua kapal.
- *
- * @param kapal1 Kapal pertama.
- * @param kapal2 Kapal kedua.
- *
- * @return Jarak antara kapal1 dan kapal2
+ * @brief Menghitung jarak Euclidean antara sebuah kapal dan sebuah pulau.
+ * @param ship Kapal yang posisinya akan digunakan untuk perhitungan jarak.
+ * @param islandCoordinate Koordinat pulau yang menjadi titik acuan.
+ * @return float Jarak Euclidean antara kapal dan pulau.
+ * @note I.S. : `ship` dan `islandCoordinate` terdefinisi.
+ * @note F.S. : Mengembalikan jarak non-negatif.
  */
-float hitungJarakKeKapal(Kapal kapal1, Kapal kapal2);
+float calculateDistanceToIsland(Kapal ship, Koordinat islandCoordinate);
 
 /**
- * Mengecek apakah kapal valid.
- *
- * Kapal valid jika tidak ada kapal lain yang memiliki koordinat sama dengan kapal tersebut dan tidak ada kapal lain yang memiliki kode yang sama
- * Kapal valid jika tidak berada di pulau
- *
- * @param kapal Kapal yang akan di cek validitasnya
- * @param pulau Koordinat pulau yang menjadi acuan
- * @param listKapal Array of Kapal yang akan di cek
- * @param N Banyaknya kapal dalam listKapal
- *
- * @return TRUE jika kapal valid, FALSE jika tidak
+ * @brief Menghitung jarak Euclidean antara dua buah kapal.
+ * @param ship1 Kapal pertama.
+ * @param ship2 Kapal kedua.
+ * @return float Jarak Euclidean antara kedua kapal.
+ * @note I.S. : `ship1` dan `ship2` terdefinisi.
+ * @note F.S. : Mengembalikan jarak non-negatif.
  */
-boolean isKapalValid(Kapal kapal, Koordinat pulau, Kapal *listKapal, int N);
+float calculateDistanceBetweenShips(Kapal ship1, Kapal ship2);
 
 /**
- * Mengurutkan kapal berdasarkan jarak terdekat ke pulau.
- *
- * Algoritma yang digunakan adalah bubble sorting.
- *
- * @param listKapal Array of Kapal yang akan diurutkan
- * @param pulau Koordinat pulau yang menjadi acuan
- * @param N Banyaknya kapal dalam listKapal
+ * @brief Memeriksa apakah penempatan sebuah kapal baru valid terhadap kondisi yang ada.
+ * @details Validitas ditentukan berdasarkan:
+ *          1. Tidak ada tabrakan posisi dengan kapal lain yang sudah ada.
+ *          2. Tidak ada duplikasi kode kapal dengan kapal lain yang sudah ada.
+ *          3. Tidak ada tabrakan posisi dengan pulau.
+ *        Jika tidak valid, fungsi ini akan mencetak pesan error yang sesuai ke standar output.
+ * @param newShip Kapal baru yang validitas penempatannya akan dicek.
+ * @param islandCoordinate Koordinat pulau.
+ * @param existingShips Array dari kapal-kapal yang sudah ada sebelumnya.
+ * @param numberOfExistingShips Jumlah kapal yang ada dalam array `existingShips`.
+ * @return boolean `TRUE` jika penempatan kapal valid, `FALSE` jika tidak.
+ * @note I.S. : Semua parameter terdefinisi.
+ * @note F.S. : Mengembalikan status validitas. Pesan error dicetak jika tidak valid.
  */
-void urutkanKapalTerdekat(Kapal *listKapal, Koordinat pulau, int N);
+boolean isShipPlacementValid(Kapal newShip, Koordinat islandCoordinate, Kapal *existingShips, int numberOfExistingShips);
 
 /**
- * Mencari kapal terdekat.
- *
- * Fungsi ini menerima input berupa N dan R, lalu N buah kapal yang akan di cek.
- * Fungsi ini akan mengoutputkan N buah kapal yang terdekat dengan pulau Mackenbruh
- * yang berjarak kurang dari atau sama dengan R.
- *
- * Fungsi ini juga akan mengoutputkan "Perdamaian di pulau Mackenbruh telah usai :("
- * jika ada kapal yang setelah diurutkan ternyata jaraknya diluar radius tembakan.
+ * @brief Mengurutkan sebuah array kapal berdasarkan jarak terdekat ke pulau (ascending).
+ * @details Menggunakan algoritma pengurutan sederhana (misalnya, bubble sort seperti di implementasi asli).
+ *          Pengurutan dilakukan secara in-place pada array `shipList`.
+ * @param shipList Pointer ke array kapal yang akan diurutkan.
+ * @param islandCoordinate Koordinat pulau yang menjadi acuan untuk perhitungan jarak.
+ * @param shipCount Jumlah kapal dalam `shipList`.
+ * @note I.S. : `shipList`, `islandCoordinate`, dan `shipCount` terdefinisi. `shipList` berisi `shipCount` kapal.
+ * @note F.S. : Array `shipList` terurut berdasarkan jarak setiap kapal ke `islandCoordinate` secara menaik.
  */
-void cariKapalTerdekat();
+void sortShipsByDistanceToIsland(Kapal *shipList, Koordinat islandCoordinate, int shipCount);
 
-#endif
+/**
+ * @brief Fungsi utama untuk menjalankan simulasi, mencari, dan melaporkan kapal terdekat yang dalam radius serang.
+ * @details Fungsi ini akan:
+ *          1. Membaca jumlah total kapal yang akan diinput dan radius serang.
+ *          2. Membaca koordinat pulau.
+ *          3. Membaca data untuk setiap kapal (posisi dan kode), memvalidasi penempatannya.
+ *          4. Mengurutkan kapal-kapal yang valid berdasarkan jaraknya ke pulau.
+ *          5. Mencetak informasi kapal yang berada dalam radius serang, diurutkan dari yang terdekat.
+ *          6. Jika ada kapal (setelah diurutkan) yang berada di luar radius serang,
+ *             mencetak pesan "Perdamaian di pulau Mackenbruh telah usai :(" dan berhenti melaporkan.
+ * @note I.S. : Tidak ada. Input dibaca dari standar input.
+ * @note F.S. : Hasil simulasi dicetak ke standar output.
+ */
+void findAndReportNearbyShips(void); // Menggunakan void karena tidak menerima argumen langsung
+
+#endif // NIMONSATTACK_H

@@ -1,263 +1,307 @@
+/**
+ * --------------------------------------------------------------
+ * | @file AsistenNimons.h                                      |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Header file untuk ADT List Statik yang digunakan untuk     |
+ * | mengelola daftar nilai praktikum Nimons. Mendefinisikan    |
+ * | struktur data dan prototipe fungsi terkait.                |
+ * --------------------------------------------------------------
+ */
+
 #ifndef ASISTENNIMONS_H
 #define ASISTENNIMONS_H
 
-#include "Boolean.h"
-#include <stdio.h>
-#include <string.h>
+#include "Boolean.h" // Asumsi Boolean.h sudah distandarisasi
+// #include <stdio.h> // Sebaiknya di .c jika hanya untuk printf
+// #include <string.h> // Sebaiknya di .c jika hanya untuk strcmp/strcpy
 
-#define MAX_CAPACITY 100
-#define IDX_UNDEFINED -1
+/* ***************************************************** */
+/* ********************** KONSTANTA ******************** */
+/* ***************************************************** */
 
-typedef int IdxType;
-typedef struct
-{
-    char nama[10]; /* Nama Nimons */
-    int praktikum; /* Praktikum ke-n*/
-    int nilai;     /* Nilai Praktikum */
-} ElType;
+#define MAX_CAPACITY 100   // Kapasitas maksimum list.
+#define IDX_UNDEFINED -1   // Indeks yang tidak terdefinisi.
+#define MAX_NAME_LENGTH 10 // Panjang maksimum nama Nimons (sesuai ElType asli).
 
-typedef struct
-{
-    ElType daftar[MAX_CAPACITY]; /* memori tempat penyimpan elemen (container) */
-    int Neff;                    /* banyaknya elemen efektif */
-} ListNilaiNimons;
+/* ***************************************************** */
+/* ********************** TIPE DATA ******************** */
+/* ***************************************************** */
 
-/* Indeks yang digunakan [0..MAX_CAPACITY-1]
- * Jika L adalah ListNilaiNimons, cara deklarasi dan akses:
- *
- * Deklarasi:  ListNilaiNimons L;
- *
- * Maka cara akses:
- * L.Neff untuk mengetahui banyaknya elemen
- * L.daftar untuk mengakses seluruh nilai elemen tabel
- * L.daftar[i] untuk mengakses elemen ke-i
- *
- * Definisi:
- * Tabel kosong: L.Neff = 0
- * Definisi elemen pertama : L.daftar[i] dengan i=1
- * Definisi elemen terakhir yang terdefinisi: L.daftar[i] dengan i=L.Neff
- *
- * Notes:
- * - Praktikum dapat dipastikan terurut membesar dan selalu berurutan (1, 2, 3, 4, dst) tidak ada praktikum yang tidak berurutan (misal 1, 2, 4, 7, dst)
- **/
+typedef int IdxType; // Tipe data untuk indeks array.
 
-/* ********** KONSTRUKTOR ARRAY ********** */
-/* Konstruktor : create tabel kosong */
-void MakeEmpty(ListNilaiNimons *L);
-/* I.S. sembarang */
-/* F.S. Terbentuk list L kosong dengan kapasitas MAX_CAPACITY */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// (*L).Neff = 0;
-
-/* ********** SELEKTOR ********** */
-/* *** Banyaknya elemen *** */
-int NbElmt(ListNilaiNimons L);
-/* Mengirimkan banyaknya elemen efektif list */
-/* Mengirimkan nol jika list kosong */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return L.Neff;
-
-/* *** Daya tampung container *** */
-int MaxNbEl(ListNilaiNimons L);
-/* Mengirimkan maksimum elemen yang dapat ditampung oleh list */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return MAX_CAPACITY;
-
-/* *** Selektor INDEKS *** */
-IdxType GetFirstIdx(ListNilaiNimons L);
-/* Prekondisi : List L tidak kosong */
-/* Mengirimkan indeks elemen pertama */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return 0;
-
-IdxType GetLastIdx(ListNilaiNimons L);
-/* Prekondisi : List L tidak kosong */
-/* Mengirimkan indeks elemen terakhir */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return L.Neff-1;
-
-/* *** Menghasilkan sebuah elemen *** */
-ElType GetElmt(ListNilaiNimons L, IdxType i);
-/* Prekondisi : List tidak kosong, i antara FirstIdx(L)..LastIdx(L) */
-/* Mengirimkan elemen list yang ke-i */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return L.daftar[i];
-
-/* *** Selektor SET : Mengubah nilai list dan elemen list *** */
-/* Untuk type private/limited private pada bahasa tertentu */
-void SetTab(ListNilaiNimons Lin, ListNilaiNimons *Lout);
-/* I.S. Lin terdefinisi, sembarang */
-/* F.S. Lout berisi salinan Lin */
-/* Assignment Lout = Lin */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// (*Lout).Neff = Lin.Neff;
-// for(int i = 0; i < Lin.Neff; i++){
-//     (*Lout).daftar[i] = Lin.daftar[i];
-// }
-
-void SetEl(ListNilaiNimons *L, IdxType i, ElType v);
-/* I.S. L terdefinisi, sembarang */
-/* F.S. Elemen L yang ke-i bernilai v */
-/* Mengeset nilai elemen list yang ke-i sehingga bernilai v */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// (*L).daftar[i] = v;
-// if ((*L).Neff < i+1){
-//     (*L).Neff = i+1;
-// }
-
-void SetNeff(ListNilaiNimons *L, IdxType N);
-/* I.S. L terdefinisi, sembarang */
-/* F.S. Nilai indeks efektif L bernilai N */
-/* Mengeset nilai indeks elemen efektif sehingga bernilai N */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// (*L).Neff = N;
-
-/* ********** Test Indeks yang valid ********** */
-boolean IsIdxValid(ListNilaiNimons L, IdxType i);
-/* Prekondisi : i sembarang */
-/* Mengirimkan true jika i adalah indeks yang valid utk ukuran list */
-/* yaitu antara indeks yang terdefinisi utk container */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return i >= GetFirstIdx(L) && i < MAX_CAPACITY;
-
-boolean IsIdxEff(ListNilaiNimons L, IdxType i);
-/* Prekondisi : i sembarang*/
-/* Mengirimkan true jika i adalah indeks yang terdefinisi utk list */
-/* yaitu antara GetFirstIdx(L)..GetLastIdx(L) */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return i >= GetFirstIdx(L) && i <= GetLastIdx(L);
-
-/* ********** TEST KOSONG/PENUH ********** */
-/* *** Test tabel kosong *** */
-boolean IsEmpty(ListNilaiNimons L);
-/* Mengirimkan true jika list L kosong, mengirimkan false jika tidak */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return L.Neff == 0;
-
-/* *** Test tabel penuh *** */
-boolean IsFull(ListNilaiNimons L);
-/* Mengirimkan true jika tabel T penuh, mengirimkan false jika tidak */
-/* Untuk membantu pengerjaan praktikum, silahkan gunakan kode berikut untuk fungsi ini */
-// return L.Neff == MAX_CAPACITY;
-
-/* ********** BACA dan TULIS dengan INPUT/OUTPUT device ********** */
-void PrintIsi(ListNilaiNimons L);
-/* Proses : Menuliskan isi list dengan traversal */
-/* I.S. L boleh kosong */
-/* F.S. Jika L tidak kosong : elemen tabel ditulis berderet ke bawah dengan format */
-/* <Nama> - <Prak ke-n> - <Nilai> */
-/* Contoh:
-    Dave - 1 - 89
-    Bokem - 2 - 30
-    PalePale - 1 - 70
-    PuluPulu - 9 - 59
-*/
-/* Jika L kosong : Hanya menulis "List kosong" */
-
-/* ********** KONSTRUKTOR NILAI NIMONS ********** */
-ElType MakeNilai(char *nama, int prakke, int nilai);
-/* Membentuk sebuah Nilai Nimons dari komponen-komponennya */
-/* Prekondisi (tidak perlu dicek): */
-/* Nama terdiri atas maksimal 10 huruf. Contoh: NimonsUwu */
-/* Prak ke-n terdiri dari angka 1-100 (karena praktikum kalian akan sebanyak itu 🥰) */
-/* Nilai hanya terdiri dari angka range 0 - 100 */
-/* I.S. nama dan nilai terdefinisi */
-/* F.S. Nilai Nimons terbentuk dengan nama dan nilai yang sesuai */
-
-/* ********** OPERATOR STATISTIK NILAI NIMONS ********** */
-float AvgNilaiNama(ListNilaiNimons L, char *nama);
-/* Prekondisi : List L tidak kosong */
-/* Mengembalikan rata-rata nilai nimon dengan nama = <nama> dari semua praktikum */
-/* Jumlahkan semua nilai nimon dengan nama = <nama> lalu bagi dengan jumlahnya */
-/* Keluarkan 0 apabila tidak ada nama dalam list */
-/* HINT:
- * - Gunakan strcmp untuk membandingkan value 2 string -> strcmp(str1, str2) == 0 <- artinya: perbedaan character antara str1 dan str2 = 0
- * - Ingat pembagian 0
- * - lakukan casting integer ke float sebelum melakukan pembagian -> (float)total / count */
-
-int MaxNilaiNama(ListNilaiNimons L, char *nama);
-/* Prekondisi : List L tidak kosong */
-/* Mengembalikan nilai maksimum dari nimon dengan nama = <nama> dari semua praktikum */
-/* Cari nilai maksimum dari nimon dengan nama = <nama> */
-/* Keluarkan -1 apabila tidak ada nama dalam list */
-/* HINT: Gunakan strcmp untuk membandingkan value 2 string */
-
-int MinNilaiNama(ListNilaiNimons L, char *nama);
-/* Prekondisi : List L tidak kosong */
-/* Mengembalikan nilai minimum dari nimon dengan nama = <nama> dari semua praktikum */
-/* Cari nilai minimum dari nimon dengan nama = <nama> */
-/* Keluarkan 101 apabila tidak ada nama dalam list */
-/* HINT: Gunakan strcmp untuk membandingkan value 2 string */
-
-float AvgNilai(ListNilaiNimons L);
-/* Mengembalikan rata-rata nilai nimon di semua praktikum */
-/* Jumlahkan semua nilai nimon lalu bagi dengan jumlahnya */
-/* Keluarkan 0 apabila list kosong */
-/* HINT:
- * - Gunakan strcmp untuk membandingkan value 2 string -> strcmp(str1, str2) == 0 <- artinya: perbedaan character antara str1 dan str2 = 0
- * - Ingat pembagian 0
- * - lakukan casting integer ke float sebelum melakukan pembagian -> (float)total / count */
-
-int MaxNilai(ListNilaiNimons L);
-/* Mengembalikan nilai maksimum dari nimon di semua praktikum */
-/* Cari nilai maksimum dari nimon */
-/* Keluarkan -1 apabila list kosong */
-
-int MinNilai(ListNilaiNimons L);
-/* Mengembalikan nilai minimum dari nimon di semua praktikum */
-/* Cari nilai minimum dari nimon */
-/* Keluarkan 101 apabila list kosong */
-
-int CountTotalPraktikum(ListNilaiNimons L);
-/* Prekondisi : List L tidak kosong */
-/* Menghitung jumlah praktikum yang telah terdaftar pada daftar nilai */
-/* Hitung jumlah praktikum unik yang ada pada list */
-/* HINT:
-- Gunakan list sementara dengan size MAX_CAPACITY untuk menyimpan daftar praktikum yang sudah pernah dicek
-- Inisialisasi semua elemen list sementara dengan 0 -> int list_temp[MAX_CAPACITY] = {0};
-- Beri tanda pada elemen list sementara yang sudah dicek (misal: menandai dengan 1)
-*/
-void DisplayStatistic(ListNilaiNimons L);
-/* I.S. List L DIPASTIKAN tidak kosong */
-/* F.S. Mencetak statistik ke layar, desimal dicetak dengan 2 angka di belakang koma */
-/* Contoh: */
-/*
-- Total praktikum: 100
-- Rata-rata: 75.00
-- Nilai maksimum: 100
-- Nilai minimum: 40
-*/
-/* HINT: Hitung jumlah praktikum terlebih dahulu */
-
-void DisplayStatisticNimons(ListNilaiNimons L, char *nama);
-/* I.S. List L DIPASTIKAN tidak kosong */
-/* F.S. Mencetak statistik ke layar, desimal dicetak dengan 2 angka di belakang koma */
-/* Contoh: */
-/*
-Nama: Dave
-Praktikum 1: 89
-Praktikum 2: 70
-...
-Praktikum 100: 60
-
-Rata-rata: 73.00
-Nilai maksimum: 89
-Nilai minimum: 60
-Nilai akhir: B
-*/
-
-/* ********** UTILS ********** */
-char KonversiNilai(int nilai);
-/* Prekondisi : Nilai memiliki nilai integer dengan range 0-100 */
-/* Mengembalikan indeks dengan aturan berikut */
 /**
- * Nilai >= 80 -> A
- * Nilai >= 65 -> B
- * Nilai >= 50 -> C
- * Nilai >= 35 -> D
- * Nilai >= 0  -> E
- * Nilai < 0  -> I
+ * @struct NimonsScoreRecord
+ * @brief Menyimpan detail satu record nilai praktikum Nimons.
+ * @details Terdiri dari nama Nimons, nomor praktikum, dan nilai yang diperoleh.
  */
-/* HINT: Konversi aturan diatas menjadi bentuk if else */
+typedef struct NimonsScoreRecord // Mengganti ElType menjadi nama yang lebih deskriptif
+{
+    char nimonsName[MAX_NAME_LENGTH + 1]; /**< Nama Nimons (string, +1 untuk null terminator). */
+    int practicumNumber;                  /**< Nomor praktikum (misal, 1, 2, ...). */
+    int score;                            /**< Nilai praktikum (0-100). */
+} NimonsScoreRecord;
 
-#endif
+/**
+ * @struct NimonsScoreList
+ * @brief Merepresentasikan list statik untuk menyimpan kumpulan NimonsScoreRecord.
+ * @details Menggunakan array dengan kapasitas tetap MAX_CAPACITY.
+ */
+typedef struct NimonsScoreList // Mengganti ListNilaiNimons
+{
+    NimonsScoreRecord scores[MAX_CAPACITY]; /**< Container (array) untuk menyimpan data nilai. */
+    int effectiveElementCount;              /**< Jumlah elemen efektif yang terisi dalam list. */
+} NimonsScoreList;
+
+/*
+ * Catatan Struktur Data dan Akses:
+ * - Indeks yang digunakan: [0..MAX_CAPACITY-1].
+ * - Jika `list` adalah NimonsScoreList:
+ *   - `list.effectiveElementCount`: Jumlah elemen yang valid.
+ *   - `list.scores`: Array yang menyimpan elemen.
+ *   - `list.scores[i]`: Elemen pada indeks ke-i.
+ * - Definisi List Kosong: `list.effectiveElementCount == 0`.
+ * - Elemen Pertama: `list.scores[0]` (jika tidak kosong).
+ * - Elemen Terakhir: `list.scores[list.effectiveElementCount - 1]` (jika tidak kosong).
+ *
+ * Asumsi Tambahan (dari file asli):
+ * - Nomor praktikum (`practicumNumber`) diasumsikan terurut membesar dan berurutan
+ *   (misal, 1, 2, 3, ...), tidak ada lompatan.
+ */
+
+/* ***************************************************** */
+/* ******************** KONSTRUKTOR ******************** */
+/* ***************************************************** */
+
+/**
+ * @brief Menginisialisasi list skor Nimons menjadi kosong.
+ * @param list Pointer ke `NimonsScoreList` yang akan diinisialisasi.
+ * @note I.S. : `list` sembarang.
+ * @note F.S. : `list` terinisialisasi sebagai list kosong (`effectiveElementCount` = 0).
+ */
+void createEmptyScoreList(NimonsScoreList *list);
+
+/* ***************************************************** */
+/* ********************** SELEKTOR ********************* */
+/* ***************************************************** */
+
+// --- Banyaknya Elemen ---
+/**
+ * @brief Mengembalikan jumlah elemen efektif dalam list skor.
+ * @param list `NimonsScoreList` yang akan dihitung elemennya.
+ * @return int Jumlah elemen efektif. Mengembalikan 0 jika list kosong.
+ */
+int getNumberOfElements(NimonsScoreList list);
+
+// --- Daya Tampung Container ---
+/**
+ * @brief Mengembalikan kapasitas maksimum list skor.
+ * @param list `NimonsScoreList` (parameter ini sebenarnya tidak digunakan oleh implementasi).
+ * @return int Kapasitas maksimum list (`MAX_CAPACITY`).
+ */
+int getMaxCapacity(NimonsScoreList list);
+
+// --- Selektor Indeks ---
+/**
+ * @brief Mengembalikan indeks pertama yang valid untuk list (selalu 0).
+ * @param list `NimonsScoreList` (parameter ini tidak digunakan oleh implementasi).
+ * @return IdxType Indeks pertama (0).
+ * @note Prekondisi: List tidak kosong (meskipun fungsi ini tetap mengembalikan 0).
+ */
+IdxType getFirstIndex(NimonsScoreList list);
+
+/**
+ * @brief Mengembalikan indeks terakhir yang terisi dalam list.
+ * @param list `NimonsScoreList` yang akan diperiksa.
+ * @return IdxType Indeks terakhir yang efektif. Mengembalikan `IDX_UNDEFINED` (-1) jika list kosong.
+ * @note Prekondisi: List tidak kosong.
+ */
+IdxType getLastIndex(NimonsScoreList list);
+
+// --- Menghasilkan Sebuah Elemen ---
+/**
+ * @brief Mengembalikan elemen (record nilai) pada indeks tertentu.
+ * @param list `NimonsScoreList` sumber.
+ * @param index Indeks elemen yang diinginkan.
+ * @return NimonsScoreRecord Elemen pada `list.scores[index]`.
+ * @note Prekondisi: List tidak kosong, `index` berada dalam rentang `getFirstIndex(list)` hingga `getLastIndex(list)`.
+ */
+NimonsScoreRecord getElementAt(NimonsScoreList list, IdxType index);
+
+// --- Selektor SET: Mengubah Nilai List dan Elemen List ---
+/**
+ * @brief Menyalin isi dari `sourceList` ke `destinationList`.
+ * @param sourceList `NimonsScoreList` sumber.
+ * @param destinationList Pointer ke `NimonsScoreList` tujuan.
+ * @note I.S. : `sourceList` terdefinisi, `destinationList` adalah pointer valid.
+ * @note F.S. : `destinationList` berisi salinan identik dari `sourceList`.
+ */
+void copyScoreList(NimonsScoreList sourceList, NimonsScoreList *destinationList);
+
+/**
+ * @brief Mengatur nilai elemen pada `index` tertentu dalam `list` menjadi `value`.
+ * @details Jika `index` lebih besar dari `effectiveElementCount` saat ini (namun masih dalam kapasitas),
+ *          `effectiveElementCount` akan diperbarui.
+ * @param list Pointer ke `NimonsScoreList` yang akan dimodifikasi.
+ * @param index Indeks elemen yang akan diatur.
+ * @param value `NimonsScoreRecord` baru untuk elemen tersebut.
+ * @note I.S. : `list` terdefinisi, `index` valid (`0 <= index < MAX_CAPACITY`), `value` terdefinisi.
+ * @note F.S. : `list->scores[index]` diisi dengan `value`. `list->effectiveElementCount` mungkin diperbarui.
+ */
+void setElementAt(NimonsScoreList *list, IdxType index, NimonsScoreRecord value);
+
+/**
+ * @brief Mengatur jumlah elemen efektif (`effectiveElementCount`) dari `list`.
+ * @param list Pointer ke `NimonsScoreList` yang akan dimodifikasi.
+ * @param newCount Jumlah elemen efektif baru.
+ * @note I.S. : `list` terdefinisi, `newCount` valid (`0 <= newCount <= MAX_CAPACITY`).
+ * @note F.S. : `list->effectiveElementCount` diatur menjadi `newCount`.
+ */
+void setEffectiveCount(NimonsScoreList *list, IdxType newCount);
+
+/* ***************************************************** */
+/* ************ VALIDASI INDEKS DAN STATUS ************* */
+/* ***************************************************** */
+
+/**
+ * @brief Memeriksa apakah `index` adalah indeks yang valid untuk kapasitas list.
+ * @param list `NimonsScoreList` (tidak digunakan oleh implementasi).
+ * @param index Indeks yang akan diperiksa.
+ * @return boolean `TRUE` jika `0 <= index < MAX_CAPACITY`, `FALSE` jika tidak.
+ */
+boolean isIndexValid(NimonsScoreList list, IdxType index);
+
+/**
+ * @brief Memeriksa apakah `index` adalah indeks yang efektif (terisi) dalam list.
+ * @param list `NimonsScoreList` yang akan diperiksa.
+ * @param index Indeks yang akan diperiksa.
+ * @return boolean `TRUE` jika `getFirstIndex(list) <= index <= getLastIndex(list)`, `FALSE` jika tidak.
+ */
+boolean isIndexEffective(NimonsScoreList list, IdxType index);
+
+/**
+ * @brief Memeriksa apakah list skor kosong.
+ * @param list `NimonsScoreList` yang akan diperiksa.
+ * @return boolean `TRUE` jika list kosong, `FALSE` jika tidak.
+ */
+boolean isScoreListEmpty(NimonsScoreList list);
+
+/**
+ * @brief Memeriksa apakah list skor penuh.
+ * @param list `NimonsScoreList` yang akan diperiksa.
+ * @return boolean `TRUE` jika list penuh, `FALSE` jika tidak.
+ */
+boolean isScoreListFull(NimonsScoreList list);
+
+/* ***************************************************** */
+/* ********** BACA/TULIS & KONSTRUKTOR ELEMEN ********** */
+/* ***************************************************** */
+
+/**
+ * @brief Mencetak isi dari list skor Nimons ke standar output.
+ * @details Format per elemen: `nimonsName - practicumNumber - score`.
+ *          Jika list kosong, mencetak "List kosong".
+ * @param list `NimonsScoreList` yang akan dicetak.
+ */
+void printScoreList(NimonsScoreList list);
+
+/**
+ * @brief Membuat sebuah record nilai Nimons (`NimonsScoreRecord`) baru.
+ * @param name Nama Nimons (string, maks 10 char).
+ * @param practicumNo Nomor praktikum (1-100).
+ * @param scoreValue Nilai praktikum (0-100).
+ * @return NimonsScoreRecord Record nilai Nimons yang telah diisi.
+ * @note Prekondisi (tidak dicek): Parameter sesuai batasan yang ditentukan.
+ */
+NimonsScoreRecord createNimonsScoreRecord(char *name, int practicumNo, int scoreValue);
+
+/* ***************************************************** */
+/* ************* OPERASI STATISTIK NILAI *************** */
+/* ***************************************************** */
+
+/**
+ * @brief Menghitung rata-rata nilai untuk Nimons dengan `name` tertentu.
+ * @param list `NimonsScoreList` sumber data.
+ * @param name Nama Nimons yang dicari.
+ * @return float Rata-rata nilai. Mengembalikan 0.0 jika Nimons tidak ditemukan atau tidak ada nilai.
+ * @note Prekondisi: `list` tidak kosong (sesuai deskripsi asli, namun implementasi sebaiknya tangguh).
+ */
+float calculateAverageScoreByName(NimonsScoreList list, char *name);
+
+/**
+ * @brief Mencari nilai maksimum untuk Nimons dengan `name` tertentu.
+ * @param list `NimonsScoreList` sumber data.
+ * @param name Nama Nimons yang dicari.
+ * @return int Nilai maksimum. Mengembalikan -1 jika Nimons tidak ditemukan atau tidak ada nilai.
+ * @note Prekondisi: `list` tidak kosong.
+ */
+int findMaxScoreByName(NimonsScoreList list, char *name);
+
+/**
+ * @brief Mencari nilai minimum untuk Nimons dengan `name` tertentu.
+ * @param list `NimonsScoreList` sumber data.
+ * @param name Nama Nimons yang dicari.
+ * @return int Nilai minimum. Mengembalikan 101 jika Nimons tidak ditemukan (sesuai nilai default di implementasi).
+ * @note Prekondisi: `list` tidak kosong.
+ */
+int findMinScoreByName(NimonsScoreList list, char *name);
+
+/**
+ * @brief Menghitung rata-rata keseluruhan nilai dari semua Nimons dalam list.
+ * @param list `NimonsScoreList` sumber data.
+ * @return float Rata-rata keseluruhan nilai. Mengembalikan 0.0 jika list kosong.
+ */
+float calculateOverallAverageScore(NimonsScoreList list);
+
+/**
+ * @brief Mencari nilai maksimum keseluruhan dari semua Nimons dalam list.
+ * @param list `NimonsScoreList` sumber data.
+ * @return int Nilai maksimum. Mengembalikan -1 jika list kosong.
+ */
+int findOverallMaxScore(NimonsScoreList list);
+
+/**
+ * @brief Mencari nilai minimum keseluruhan dari semua Nimons dalam list.
+ * @param list `NimonsScoreList` sumber data.
+ * @return int Nilai minimum. Mengembalikan 101 jika list kosong (sesuai nilai default di implementasi).
+ */
+int findOverallMinScore(NimonsScoreList list);
+
+/**
+ * @brief Menghitung jumlah praktikum unik yang tercatat dalam list.
+ * @param list `NimonsScoreList` sumber data.
+ * @return int Jumlah praktikum unik.
+ * @note Prekondisi: `list` tidak kosong.
+ */
+int countUniquePracticums(NimonsScoreList list);
+
+/**
+ * @brief Menampilkan statistik keseluruhan (total praktikum unik, rata-rata, maks, min) dari list.
+ * @param list `NimonsScoreList` sumber data.
+ * @note I.S. : `list` DIPASTIKAN tidak kosong.
+ * @note F.S. : Statistik dicetak ke layar. Desimal dengan 2 angka di belakang koma.
+ */
+void displayOverallStatistics(NimonsScoreList list);
+
+/**
+ * @brief Menampilkan statistik nilai (per praktikum, rata-rata, maks, min, nilai akhir) untuk Nimons `name`.
+ * @param list `NimonsScoreList` sumber data.
+ * @param name Nama Nimons yang statistiknya akan ditampilkan.
+ * @note I.S. : `list` DIPASTIKAN tidak kosong.
+ * @note F.S. : Statistik Nimons `name` dicetak ke layar.
+ */
+void displayNimonsStatistics(NimonsScoreList list, char *name);
+
+/* ***************************************************** */
+/* *********************** UTILITAS ******************** */
+/* ***************************************************** */
+
+/**
+ * @brief Mengonversi nilai angka (0-100) menjadi nilai huruf (grade).
+ * @param score Nilai angka yang akan dikonversi.
+ * @return char Nilai huruf (A, B, C, D, E). Mengembalikan 'I' jika nilai di luar rentang 0-100.
+ * @note Prekondisi: `score` adalah integer.
+ */
+char convertScoreToGrade(int score);
+
+#endif // ASISTENNIMONS_H

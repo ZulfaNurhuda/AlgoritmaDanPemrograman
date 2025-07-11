@@ -1,33 +1,67 @@
+/**
+ * --------------------------------------------------------------
+ * | @file KodeTakUnik.c                                        |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Program untuk menghitung "kode tak unik" dari sebuah       |
+ * | bilangan. Kode tak unik adalah hasil penjumlahan digit     |
+ * | secara berulang hingga hasilnya menjadi satu digit.        |
+ * --------------------------------------------------------------
+ */
+
 #include <stdio.h>
 
-int hitungTotalDigit(long angka)
+/**
+ * @brief Menghitung total dari semua digit dalam sebuah bilangan.
+ * @param number Angka (long) yang digit-digitnya akan dijumlahkan.
+ * @return long Total dari digit-digit angka tersebut.
+ */
+long sumOfDigits(long number)
 {
-    long total = 0;
+    long totalSum = 0;
 
-    while (angka > 0)
+    // Loop selama angka masih memiliki digit (lebih besar dari 0).
+    while (number > 0)
     {
-        total += angka % 10;
-        angka /= 10;
+        // Tambahkan digit terakhir ke total.
+        totalSum += number % 10;
+        // Hilangkan digit terakhir dari angka.
+        number /= 10;
     }
 
-    return total;
+    return totalSum;
 }
 
-int main()
+/**
+ * @brief Fungsi utama program.
+ * @return int Mengembalikan 0 jika program berjalan sukses.
+ */
+int main(void)
 {
-    long kodeAwal, kodeTakUnik;
-    scanf("%ld", &kodeAwal);
+    // Mendeklarasikan variabel untuk kode awal dan kode tak unik.
+    long initialCode;
+    long nonUniqueCode;
 
-    do {
-        kodeTakUnik = hitungTotalDigit(kodeAwal);
-        if (kodeTakUnik > 9)
+    // Membaca input kode awal dari pengguna.
+    scanf("%ld", &initialCode);
+
+    // Proses untuk mendapatkan kode tak unik (satu digit).
+    // Loop berjalan selama hasil penjumlahan digit masih lebih dari satu digit ( > 9).
+    do
+    {
+        // Hitung total digit dari kode saat ini.
+        nonUniqueCode = sumOfDigits(initialCode);
+        // Jika hasilnya masih lebih dari satu digit,
+        // maka hasil tersebut menjadi input untuk iterasi selanjutnya.
+        if (nonUniqueCode > 9)
         {
-            kodeAwal = kodeTakUnik;
+            initialCode = nonUniqueCode;
         }
-    }
-    while (kodeTakUnik > 9);
+    } while (nonUniqueCode > 9);
 
-    printf("%ld\n", kodeTakUnik);
+    // Mencetak kode tak unik (hasil akhir yang berupa satu digit).
+    printf("%ld\n", nonUniqueCode);
 
+    // Mengindikasikan bahwa program berakhir dengan sukses.
     return 0;
 }

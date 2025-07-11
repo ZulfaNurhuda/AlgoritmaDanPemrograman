@@ -1,36 +1,68 @@
+/**
+ * --------------------------------------------------------------
+ * | @file HitungPisangJelly.c                                  |
+ * --------------------------------------------------------------
+ * | @details                                                   |
+ * | Program untuk menghitung total nilai dari laporan pisang   |
+ * | dan jelly, dipisahkan berdasarkan nilai genap dan ganjil.  |
+ * | Pembacaan berhenti jika ditemukan laporan bernilai 0.      |
+ * --------------------------------------------------------------
+ */
+
 #include <stdio.h>
 
-int main()
+/**
+ * @brief Fungsi utama program.
+ * @return int Mengembalikan 0 jika program berjalan sukses.
+ */
+int main(void)
 {
-    long N;
-    int stopped = 0;
-    scanf("%d", &N); // Membaca jumlah laporan
+    // Mendeklarasikan variabel untuk jumlah total laporan.
+    long numberOfReports;
+    // Flag untuk menandakan apakah proses input harus dihentikan.
+    int isProcessingStopped = 0; // 0 = belum berhenti, 1 = sudah berhenti
 
-    long sum_even = 0, sum_odd = 0;
+    // Membaca jumlah total laporan yang akan diproses.
+    scanf("%ld", &numberOfReports);
 
-    for (long i = 0; i < N; i++)
+    // Variabel untuk menyimpan total nilai laporan genap dan ganjil.
+    long sumOfEvenValues = 0;
+    long sumOfOddValues = 0;
+
+    // Loop untuk membaca setiap nilai laporan.
+    for (long i = 0; i < numberOfReports; i++)
     {
-        long x;
-        scanf("%d", &x); // Membaca nilai laporan
+        // Variabel untuk menyimpan nilai laporan saat ini.
+        long reportValue;
+        // Membaca nilai laporan.
+        scanf("%ld", &reportValue);
 
-        if (x == 0)
+        // Jika nilai laporan adalah 0, set flag berhenti.
+        if (reportValue == 0)
         {
-            stopped = 1; // Berhenti jika menemukan 0
+            isProcessingStopped = 1;
         }
 
-        if (!stopped) {
-            if (x % 2 == 0)
+        // Hanya proses jika belum ada sinyal berhenti.
+        if (!isProcessingStopped)
+        {
+            // Cek apakah nilai laporan genap atau ganjil.
+            if (reportValue % 2 == 0)
             {
-                sum_even += x; // Tambahkan ke jumlah genap
+                // Jika genap, tambahkan ke total nilai genap.
+                sumOfEvenValues += reportValue;
             }
             else
             {
-                sum_odd += x; // Tambahkan ke jumlah ganjil
+                // Jika ganjil, tambahkan ke total nilai ganjil.
+                sumOfOddValues += reportValue;
             }
         }
     }
 
-    printf("%d %d\n", sum_even, sum_odd); // Cetak hasil
+    // Mencetak total nilai genap dan ganjil, dipisahkan spasi.
+    printf("%ld %ld\n", sumOfEvenValues, sumOfOddValues);
 
+    // Mengindikasikan bahwa program berakhir dengan sukses.
     return 0;
 }
