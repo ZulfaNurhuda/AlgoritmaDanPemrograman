@@ -1,10 +1,68 @@
-# IGNORE SEMUA FILE TEMPORARY
+# ========================================================= #
+#                 Gitignore Template For C                  #
+# ========================================================= #
 
-# Ignore file hasil compile
+# Prerequisites
+*.d
+
+# Object files
+*.o
+*.ko
+*.obj
+*.elf
+
+# Linker output
+*.ilk
+*.map
+*.exp
+
+# Precompiled Headers
+*.gch
+*.pch
+
+# Libraries
+*.lib
+*.a
+*.la
+*.lo
+
+# Shared objects (inc. Windows DLLs)
+*.dll
+*.so
+*.so.*
+*.dylib
+
+# Executables
 *.exe
+*.out
+*.app
+*.i*86
+*.x86_64
+*.hex
 
-# Ignore file konfigurasi yang berisi pengaturan untuk aplikasi dan sistem operasi
-*.ini
+# Debug files
+*.dSYM/
+*.su
+*.idb
+*.pdb
 
-# Ignore file microsoft word
+# Kernel Module Compile Results
+*.mod*
+*.cmd
+.tmp_versions/
+modules.order
+Module.symvers
+Mkfile.old
+dkms.conf
+
+# Debug information files
+*.dwo
+
+# ========================================================= #
+#                 Custom for This Project                   #
+# ========================================================= #
+
+# Microsoft Word files
+*.doc
 *.docx
+*.docm
